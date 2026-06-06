@@ -107,6 +107,39 @@ app.get('/api/auditoria',roles('ADMINISTRADOR','AUDITOR'),(req,res)=>res.json(re
 app.post('/api/competencias/:mes/fechar',roles('ADMINISTRADOR'),(req,res)=>{ const cs=read('competencias.json',[]); let c=cs.find(x=>x.mes===req.params.mes); if(!c){c={mes:req.params.mes}; cs.push(c)} c.status='FECHADA'; c.fechadoPor=req.session.user.login; c.fechadoEm=now(); write('competencias.json',cs); audit(req,'FECHAR_COMPETENCIA','competencia',req.params.mes,[{campo:'mes',novo:req.params.mes}]); res.json(c); });
 
 function publicCheck(req,res,next){ if((req.headers['x-api-key']||req.query.key)!==PUBLIC_API_KEY) return res.status(401).json({erro:'API key inválida'}); next(); }
-app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const item={municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!i.bloqueado, motivo_bloqueio:i.motivoBloqueio||'', observacao:i.observacao||'', procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-'}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
+
+app.post('/api/public/rede-executora/prestadores/:id/bloqueio', publicCheck, (req,res)=>{
+  const ps=read('prestadores.json',[]);
+  const p=ps.find(x=>x.id===req.params.id);
+  if(!p) return res.status(404).json({erro:'Prestador não encontrado'});
+  const bloqueado = !!req.body.bloqueado;
+  p.bloqueado = bloqueado;
+  p.motivoBloqueio = bloqueado ? (req.body.motivoBloqueio || 'Prestador bloqueado') : '';
+  (p.instrumentos||[]).forEach(i=>{ i.bloqueado=bloqueado; i.motivoBloqueio=p.motivoBloqueio; });
+  write('prestadores.json',ps);
+  audit(req, bloqueado?'BLOQUEAR_PRESTADOR':'DESBLOQUEAR_PRESTADOR','prestador',p.id,[{campo:'prestador',novo:p.nome},{campo:'motivo',novo:p.motivoBloqueio}]);
+  res.json({ok:true, prestador:p});
+});
+
+app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{
+  const {mes, prestadorId, instrumentoId, itens}=req.body;
+  const ps=read('prestadores.json',[]);
+  const {p,i}=findInstrumento(ps,prestadorId,instrumentoId);
+  if(!p || !i) return res.status(404).json({erro:'Prestador/instrumento não encontrado'});
+  if(p.bloqueado || i.bloqueado) return res.status(400).json({erro:'Prestador bloqueado para lançamento.'});
+  const ofs=read('ofertas.json',[]);
+  (itens||[]).forEach(item=>{
+    const proc=(i.procedimentos||[]).find(pr=>onlyDigits(pr.codigo)===onlyDigits(item.codigo)) || {codigo:item.codigo,nome:item.nome};
+    const qtd=Number(item.quantidade||0);
+    let o=ofs.find(x=>x.mes===mes&&x.prestadorId===prestadorId&&x.instrumentoId===instrumentoId&&onlyDigits(x.codigo)===onlyDigits(proc.codigo));
+    if(!o){ o={id:uid('o'),mes,prestadorId,instrumentoId,prestador:p.nome,municipio:p.municipio,servico:i.servico,codigo:proc.codigo,nome:proc.nome,quantidade:0,criadoPor:'rede-executora',criadoEm:now(),alteradoPor:'',alteradoEm:'',observacao:''}; ofs.push(o); }
+    o.quantidade=qtd; o.observacao=item.observacao||o.observacao||''; o.alteradoPor='rede-executora'; o.alteradoEm=now();
+  });
+  write('ofertas.json',ofs);
+  audit(req,'LANÇAR_QUANTITATIVO_REDE','oferta',instrumentoId,[{campo:'prestador',novo:p.nome},{campo:'servico',novo:i.servico},{campo:'mes',novo:mes},{campo:'itens',novo:(itens||[]).length}]);
+  res.json({ok:true});
+});
+
+app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
 
 app.listen(PORT,()=>console.log('SIGOA rodando na porta '+PORT));
