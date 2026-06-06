@@ -1,0 +1,6 @@
+[
+  {"codigo":"0206010079","nome":"RESSONANCIA MAGNETICA","grupo":"DIAGNOSTICO","subgrupo":"RESSONANCIA","ativo":true},
+  {"codigo":"0206030010","nome":"TOMOGRAFIA COMPUTADORIZADA","grupo":"DIAGNOSTICO","subgrupo":"TOMOGRAFIA","ativo":true},
+  {"codigo":"0406030014","nome":"CATETERISMO CARDIACO","grupo":"HEMODINAMICA","subgrupo":"CARDIOLOGIA INTERVENCIONISTA","ativo":true},
+  {"codigo":"UTI001","nome":"LEITO DE TERAPIA INTENSIVA","grupo":"TERAPIA INTENSIVA","subgrupo":"UTI","ativo":true}
+]

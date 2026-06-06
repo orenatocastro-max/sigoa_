@@ -1,0 +1,834 @@
+{
+  "PORTO VELHO": [
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL SAMAR - PORTO VELHO",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "05/12/2026",
+      "numero_contrato": "565/2026"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL 9 DE JULHO DE RONDONIA LTDA",
+      "link": " ",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "27/03/2027",
+      "numero_contrato": "280/2026"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "CASA DE SAUDE SANTA MARCELINA",
+      "natureza": "CONTRATUALIZADA",
+      "numero_contrato": "309/2026",
+      "contrato_fim": "23/10/2026",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL PRONTOCORDIS",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "10/03/2027",
+      "numero_contrato": "216/2026"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "IRB PRIME CARE SERVICOS MEDICOS CLINICO HOSPITALAR LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "11/03/2027",
+      "numero_contrato": "217/2026",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "INSTITUTO DO CORACAO DE RONDONIA",
+      "link": " ",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "27/03/2027",
+      "numero_contrato": "219/2026"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL DE RETAGUARDA DE RONDONIA - HRRO",
+      "natureza": "PROPRIA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL DE BASE DR. ARY PINHEIRO",
+      "natureza": "PROPRIA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL DE BASE DR. ARY PINHEIRO (UTI)",
+      "natureza": "PROPRIA",
+      "observacao": "22 Leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "HOSPITAL PRONTOCORDIS(RM)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "10/11/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "1058/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "ALPHACLIN - UNIDADE DE ULTRASSONOGRAFIA DE RONDONIA LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "25/04/2027",
+      "numero_contrato": "250/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "CENTRO DE DIAGNOSTICO RADIOIMAGEM(RM)",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Contraste e Sedação",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "02/07/2026",
+      "numero_contrato": "519/2026"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "CENTRO DE DIAGNOSTICO RADIOIMAGEM LTDA(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Contraste e Sedação",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "14/11/2026",
+      "numero_contrato": "1083/2026"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "ENOCH - UNIDADE DE RADIODIAGNOSTICO E ULTRA-SONOGRAFIA LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "observacao": "Convencional e Contraste",
+      "motivo_bloqueio": "",
+      "contrato_fim": "23/05/2027",
+      "numero_contrato": "533/2026"
+    },
+    {
+      "servico": "DIAGNOSTICO: ELETROENCEFALO E ELETRONEURO",
+      "prestador": "NEUROPH",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "20/08/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "734/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO / TERAPIA ONCOLOGICA",
+      "prestador": "HOSPITAL DE AMOR AMAZONIA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "HOSPITAL SAMAR - PORTO VELHO(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "25/06/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "571/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "HOSPITAL PRONTOCORDIS(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "23/06/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "427/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO (ULTRASSONOGRAFIA)",
+      "prestador": "HOSPITAL DE RETAGUARDA DE RONDONIA - HRRO",
+      "natureza": "PROPRIA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "SAÚDE AUDITVA",
+      "prestador": "LIMIAR",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "24/11/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "1129/2023"
+    },
+    {
+      "servico": "DIAGNOSTICO: CINTILOGRAFIA",
+      "prestador": "CENTRO DE MEDICINA NUCLEAR DE RONDONIA LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "03/03/2027",
+      "numero_contrato": "134/2022"
+    },
+    {
+      "servico": "DIAGNOSTICO: DENSITOMETRIA",
+      "prestador": "DENSYA MEDICINA ESPECIALIZADA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "18/02/2027",
+      "numero_contrato": "117/2024"
+    },
+    {
+      "servico": "HEMODIALISE AMBULATORIAL (TRS)",
+      "prestador": "NEFRON SERVICOS DE NEFROLOGIA LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "25/04/2027",
+      "numero_contrato": "240/2025"
+    },
+    {
+      "servico": "HEMODIALISE AMBULATORIAL (TRS)",
+      "prestador": "CLINICA RENAL DE RONDONIA LTDA (CLINERON)",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "25/04/2027",
+      "numero_contrato": "242/2025"
+    },
+    {
+      "servico": "REABILITAÇÃO",
+      "prestador": "CERO - CENTRO DE REABILITACAO DO ESTADO DE RONDONIA",
+      "natureza": "PROPRIA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "ODONTOLOGIA",
+      "prestador": "CEO - CENTRO ESPECIALIZADO EM ODONTOLOGIA",
+      "natureza": "PROPRIA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "HEMODINAMICA",
+      "prestador": "ANGIOCENTER",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "11/08/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "749/2025"
+    },
+    {
+      "servico": "HEMODINAMICA",
+      "prestador": "CCATE",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "15/12/2026",
+      "observacao": "1º TA (67430405)",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "755/2025"
+    },
+    {
+      "servico": "HEMODINAMICA",
+      "prestador": "NOVECATE",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "14/12/2026",
+      "observacao": "1º TA (67444348)",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "748/2025"
+    },
+    {
+      "servico": "HEMODINAMICA",
+      "prestador": "NEUROCORDIS",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "24/01/2027",
+      "observacao": "1º TA (68273235)",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "770/2025"
+    },
+    {
+      "servico": "NEUROCIRURGIA",
+      "prestador": "IRB PRIME CARE SERVICOS MEDICOS CLINICOS HOSPITALARES LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "07/07/2026",
+      "numero_contrato": "609/2025",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "NEUROCIRURGIA",
+      "prestador": "INAO SERVICOS MEDICOS LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "23/06/2026 ",
+      "numero_contrato": "586/2025",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "OFTALMOLOGIA",
+      "prestador": "SOL SERVICOS DE OFTALMOLOGIA LTDA (CLINICA SOL)",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "472/2025",
+      "contrato_fim": "27/05/2027"
+    },
+    {
+      "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+      "prestador": "DIAC - INSTITUTO PAULISTA DE MEDICINA DE PORTO VELHO LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "15/05/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "388/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+      "prestador": "LABORATORIO BIO CHECK UP",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "29/07/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "651/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+      "prestador": "CEPAM - L L S VERAS LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "18/07/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "388/2025"
+    },
+    {
+      "servico": "TRANSPORTE AEROMEDICO",
+      "prestador": "RIMA - RIO MADEIRA AVIACAO LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "numero_contrato": "81/2025",
+      "contrato_fim": "03/02/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "COMUNIDADES TERAPEUTICAS",
+      "prestador": "ASSOCIACAO CASA FAMILIA ROSETTA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "01/06/2027",
+      "numero_contrato": "348/2021",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "LEITOS CLINICOS",
+      "prestador": "HOSPITAL 9 DE JULHO DE RONDONIA LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": " 27/03/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL SAMAR S/A",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "ASSISTENCIA MEDICA INTENSIVA - AMI 24H",
+      "natureza": "PROPRIA",
+      "observacao": "40 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL JOÃO PAULO II",
+      "natureza": "PROPRIA",
+      "observacao": "10 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "CEMETRON - JBS",
+      "natureza": "REDE PROPRIA",
+      "observacao": "06 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "CEMETRON",
+      "natureza": "REDE PROPRIA",
+      "observacao": "07 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "CACOAL": [
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL DOS ACIDENTADOS",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "01/08/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "714/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC ",
+      "prestador": "ANGA (TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "30/07/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": true,
+      "motivo_bloqueio": "Excedente do limite financeiro",
+      "numero_contrato": "615/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "ANGA (RM)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "30/07/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "615/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "NOVA IMAGEM DIAGNOSTICO",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "18/07/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "647/2025"
+    },
+    {
+      "servico": "HEMODINAMICA",
+      "prestador": "CARDIO CENTER",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "28/06/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "990/2022"
+    },
+    {
+      "servico": "OFTALMOLOGIA",
+      "prestador": "NEGREIROS & VENTORIN SERVICOS MEDICOS LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "28/05/2027",
+      "numero_contrato": "473/2025"
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL SAMAR S/A - CACOAL",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "17/06/2026",
+      "numero_contrato": "458/2023",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL REGIONAL DE CACOAL - HRC",
+      "natureza": "PROPRIA",
+      "observacao": "26 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HEURO",
+      "natureza": "PROPRIA",
+      "observacao": "10 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "COMUNIDADES TERAPEUTICAS",
+      "prestador": "COMUNIDADE TERAPEUTICA ABISAI",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "01/06/2027",
+      "numero_contrato": "347/2021",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "JI-PARANÁ": [
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL CANDIDO RONDON",
+      "link": "https://drive.google.com/file/d/1ev6UCrRkEs8vs-mC9YeLMUG51yN9s8YK/view?usp=drive_link",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "07/11/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "1206/2025"
+    },
+    {
+      "servico": "CIRURGIA CARDIACA NEO",
+      "prestador": "HOSPITAL CANDIDO RONDON (SSY HOLDING LTDA)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "23/01/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "61/2026"
+    },
+    {
+      "servico": "CIRURGIA CARDIACA PED",
+      "prestador": "HOSPITAL CANDIDO RONDON (SSY HOLDING LTDA)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "23/01/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "61/2026"
+    },
+    {
+      "servico": "CIRURGIA CARDIACA ADULTO",
+      "prestador": "HOSPITAL CANDIDO RONDON (SSY HOLDING LTDA)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "23/01/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "61/2026"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL SAMAR S/A - JI PARANA (Cirurgias)",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "22/01/2027",
+      "numero_contrato": "64/2026"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "FUNDACAO PIO XII(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "30/03/2027",
+      "observacao": "Contraste e Sedação",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "775/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "FUNDACAO PIO XII(RM)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "30/03/2027",
+      "observacao": "Contraste e Sedação",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "775/2025"
+    },
+    {
+      "servico": "OFTALMOLOGIA",
+      "prestador": "INSTITUTO OFTALMOLOGICO DO BRASIL LTDA (SANTA CASA DE JI PARANA)",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "513/2025",
+      "contrato_fim": "05/06/2027"
+    },
+    {
+      "servico": "OFTALMOLOGIA",
+      "prestador": "SOL SERVICOS DE OFTALMOLOGIA (SOL OFTALMOLOGIA)",
+      "natureza": "CONTRATUALIZADA",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "556/2025",
+      "contrato_fim": "16/06/2027"
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL MUNICIPAL DE JI PARANA",
+      "natureza": "PACTUACAO",
+      "observacao": "10 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL SAMAR S/A - JI PARANA",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "20 leitos",
+      "numero_contrato": "537/2023",
+      "contrato_fim": "17/06/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL CANDIDO RONDON(UTI)",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "15 leitos",
+      "numero_contrato": "540/2023",
+      "contrato_fim": "04/07/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "ARIQUEMES": [
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "IMEDI",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "04/09/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "768/2025"
+    },
+    {
+      "servico": "OFTALMOLOGIA",
+      "prestador": "MEDICOS DOS OLHOS (NEGREIROS & VENTORIN SERVICOS MEDICOS LTDA)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "28/05/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "469/2025"
+    },
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL MONTE SINAI(Cirurgias)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": " 07/03/2027",
+      "numero_contrato": "209/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL MONTE SINAI",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": " 16/06/2026",
+      "numero_contrato": "459/2023",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "VILHENA": [
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL BOM JESUS LTDA",
+      "link": "URL_DA_CARTA_DE_SERVICOS",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "24/07/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "1485/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "C D I CLINICA DE RADIOLOGIA E DIAGNOSTICO POR IMAGEM (TC)",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "18/07/2026",
+      "numero_contrato": "554/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "C D I CLINICA DE RADIOLOGIA E DIAGNOSTICO POR IMAGEM (RM)",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Contraste e Sedação",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "25/07/2026",
+      "numero_contrato": "677/2025"
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL REGIONAL DE VILHENA",
+      "natureza": "CONTRATO DE GESTAO",
+      "observacao": "17 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "ICAMO",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "03/12/2026",
+      "bloqueado": true,
+      "motivo_bloqueio": "Excedente do limite financeiro",
+      "numero_contrato": "1360/2025"
+    },
+    {
+      "servico": "COMUNIDADES TERAPEUTICAS",
+      "prestador": "ASSOCIACAO TRINDADE SANTA DE VILHENA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "01/06/2027",
+      "numero_contrato": "346/2021",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "ROLIM DE MOURA": [
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "MULTIMAGEM(RM)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "14/12/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "789/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "MULTIMAGEM(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "14/12/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "789/2025"
+    },
+    {
+      "servico": "COMUNIDADES TERAPEUTICAS",
+      "prestador": "COMUNIDADE TERAPEUTICA NOVA ALIANCA - CERNA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "01/06/2027",
+      "numero_contrato": "349/2021",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "CEREJEIRAS": [
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "MEGA IMAGEM",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "21/07/2026",
+      "bloqueado": true,
+      "motivo_bloqueio": "Excedente do limite financeiro",
+      "numero_contrato": "613/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "CLIMEDI LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "16/07/2026",
+      "numero_contrato": "648/2025"
+    }
+  ],
+  "GUAJARA-MIRIM": [
+    {
+      "servico": "CIRURGIAS",
+      "prestador": "HOSPITAL REGIONAL DE GUAJARA MIRIM",
+      "natureza": "CONTRATO DE GESTAO",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL REGIONAL DE GUAJARA MIRIM (UTI)",
+      "natureza": "CONTRATO DE GESTAO",
+      "observacao": "10 leitos",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    },
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "CLINI MEDI",
+      "natureza": "CONTRATUALIZADA",
+      "observacao": "Convencional",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "contrato_fim": "25/08/2026",
+      "numero_contrato": "800/2025"
+    }
+  ],
+  "JARU": [
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "GASTROIMAGEM(TC)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "27/06/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "585/2025"
+    },
+    {
+      "servico": "DIAGNOSTICO: RM",
+      "prestador": "GASTROIMAGEM(RM)",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "27/06/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "585/2025"
+    }
+  ],
+  "OURO PRETO DO OESTE": [
+    {
+      "servico": "DIAGNOSTICO: TC",
+      "prestador": "HOSPITAL SAO LUCAS DE OURO PRETO LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "25/06/2026",
+      "observacao": "Convencional e Contraste",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "577/2025"
+    },
+    {
+      "servico": "TERAPIA INTENSIVA",
+      "prestador": "HOSPITAL SAO LUCAS DE OURO PRETO",
+      "natureza": "CONTRATUALIZADA",
+      "numero_contrato": "387/2023",
+      "contrato_fim": "26/05/2027",
+      "bloqueado": false,
+      "motivo_bloqueio": ""
+    }
+  ],
+  "PIMENTA BUENO": [
+    {
+      "servico": "DIAGNOSTICO: ELETROENCEFALO E ELETRONEURO",
+      "prestador": "R D SERVICOS MEDICOS LTDA",
+      "natureza": "CONTRATUALIZADA",
+      "contrato_fim": "15/10/2026",
+      "bloqueado": false,
+      "motivo_bloqueio": "",
+      "numero_contrato": "1177/2025"
+    }
+  ]
+}
