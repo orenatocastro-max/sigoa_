@@ -4,27 +4,65 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
+let Pool = null;
+try { Pool = require('pg').Pool; } catch(e) { Pool = null; }
+
+let dbPool = null;
+let STORE_CACHE = {};
+const USE_DB = !!process.env.DATABASE_URL;
+
+async function initDatabase(){
+  if(!USE_DB) return;
+  if(!Pool) throw new Error('DATABASE_URL foi configurada, mas o pacote pg não está instalado. Rode npm install.');
+  dbPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  await dbPool.query(`CREATE TABLE IF NOT EXISTS sigoa_store (nome TEXT PRIMARY KEY, dados JSONB NOT NULL, atualizado_em TIMESTAMPTZ NOT NULL DEFAULT now())`);
+  const { rows } = await dbPool.query('SELECT nome, dados FROM sigoa_store');
+  rows.forEach(r => { STORE_CACHE[r.nome] = r.dados; });
+  console.log('Banco PostgreSQL/Supabase conectado. Itens carregados:', rows.length);
+}
+
+function persistDb(nome, dados){
+  if(!dbPool) return;
+  dbPool.query(
+    'INSERT INTO sigoa_store (nome, dados, atualizado_em) VALUES ($1, $2::jsonb, now()) ON CONFLICT (nome) DO UPDATE SET dados = EXCLUDED.dados, atualizado_em = now()',
+    [nome, JSON.stringify(dados)]
+  ).catch(err => console.error('Erro ao salvar no PostgreSQL:', nome, err.message));
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(__dirname,'data');
 const PUBLIC_API_KEY = process.env.PUBLIC_API_KEY || 'REDE_EXECUTORA_2026';
 
+app.set('trust proxy', 1);
 app.use(express.json({limit:'10mb'}));
 app.use(express.urlencoded({extended:true}));
-app.use(session({secret: process.env.SESSION_SECRET || 'sigoa-dev-secret', resave:false, saveUninitialized:false, cookie:{maxAge: 8*60*60*1000}}));
+app.use(session({
+  name: 'sigoa.sid',
+  secret: process.env.SESSION_SECRET || 'sigoa-dev-secret',
+  resave:false,
+  saveUninitialized:false,
+  cookie:{httpOnly:true, sameSite:'lax', secure: process.env.NODE_ENV === 'production', maxAge: 8*60*60*1000}
+}));
 app.use(express.static(path.join(__dirname,'public')));
 
 const file = (n)=>path.join(DATA,n);
-const read = (n, fallback)=>{ try{return JSON.parse(fs.readFileSync(file(n),'utf8'));}catch(e){return fallback;} };
-const write = (n, v)=>fs.writeFileSync(file(n), JSON.stringify(v,null,2));
+const read = (n, fallback)=>{
+  if(USE_DB && Object.prototype.hasOwnProperty.call(STORE_CACHE,n)) return STORE_CACHE[n];
+  try{return JSON.parse(fs.readFileSync(file(n),'utf8'));}catch(e){return fallback;}
+};
+const write = (n, v)=>{
+  if(USE_DB){ STORE_CACHE[n]=v; persistDb(n,v); }
+  if(!fs.existsSync(DATA)) fs.mkdirSync(DATA,{recursive:true});
+  fs.writeFileSync(file(n), JSON.stringify(v,null,2));
+};
 const now = ()=>new Date().toISOString();
 const uid = (p='id')=>`${p}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
 const onlyDigits = s => String(s||'').replace(/\D/g,'');
 
 function bootstrap(){
   if(!fs.existsSync(DATA)) fs.mkdirSync(DATA,{recursive:true});
-  if(!fs.existsSync(file('usuarios.json'))){
+  if(!read('usuarios.json', null)){
     const users = [
       {id:uid('u'), nome:'Administrador', login:'admin', perfil:'ADMINISTRADOR', status:'ATIVO', senha:bcrypt.hashSync('admin123',10), trocarSenha:false},
       {id:uid('u'), nome:'Operador', login:'operador', perfil:'OPERADOR', status:'ATIVO', senha:bcrypt.hashSync('operador123',10), trocarSenha:false},
@@ -32,7 +70,7 @@ function bootstrap(){
       {id:uid('u'), nome:'Consulta', login:'consulta', perfil:'CONSULTA', status:'ATIVO', senha:bcrypt.hashSync('consulta123',10), trocarSenha:false}
     ]; write('usuarios.json', users);
   }
-  if(!fs.existsSync(file('prestadores.json'))){
+  if(!read('prestadores.json', null)){
     const rede = read('rede-inicial.json',{});
     const prestadores = [];
     Object.entries(rede).forEach(([municipio, itens])=>{
@@ -47,10 +85,36 @@ function bootstrap(){
     });
     write('prestadores.json', prestadores);
   }
-  ['ofertas.json','auditoria.json','competencias.json'].forEach(n=>{ if(!fs.existsSync(file(n))) write(n,[]); });
+  ['ofertas.json','auditoria.json','competencias.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
+  syncAuxiliares();
 }
 function normNatureza(n){ n=String(n||'').toUpperCase(); if(n.includes('PROPRIA')) return 'REDE PROPRIA'; if(n.includes('PACT')) return 'PACTUACAO'; if(n.includes('CONVEN')) return 'CONVENIO'; if(n.includes('GESTAO')) return 'CONTRATO DE GESTAO'; return n||'CONTRATUALIZADA'; }
 function normInstrumento(n){ const x=normNatureza(n); if(x==='REDE PROPRIA') return 'REDE PROPRIA'; if(x==='PACTUACAO') return 'PACTUACAO'; if(x==='CONVENIO') return 'CONVENIO'; if(x==='CONTRATO DE GESTAO') return 'CONTRATO DE GESTAO'; return 'CONTRATO'; }
+
+function upperClean(v){ return String(v||'').trim().toUpperCase(); }
+const AUX_TIPOS = {
+  municipios: 'Municípios',
+  tiposServico: 'Tipos de serviço',
+  naturezas: 'Naturezas',
+  tiposInstrumento: 'Tipos de instrumento',
+  gruposProcedimento: 'Grupos de procedimento',
+  motivosBloqueio: 'Motivos de bloqueio',
+  situacoesVigencia: 'Situações de vigência'
+};
+const MUNICIPIOS_RO = ['ALTA FLORESTA D OESTE','ALTO ALEGRE DOS PARECIS','ALTO PARAÍSO','ALVORADA D OESTE','ARIQUEMES','BURITIS','CABIXI','CACAULÂNDIA','CACOAL','CAMPO NOVO DE RONDÔNIA','CANDEIAS DO JAMARI','CASTANHEIRAS','CEREJEIRAS','CHUPINGUAIA','COLORADO DO OESTE','CORUMBIARA','COSTA MARQUES','CUJUBIM','ESPIGÃO D OESTE','GOVERNADOR JORGE TEIXEIRA','GUAJARÁ-MIRIM','ITAPUÃ DO OESTE','JARU','JI-PARANÁ','MACHADINHO DO OESTE','MINISTRO ANDREAZZA','MIRANTE DA SERRA','MONTE NEGRO','NOVA BRASILÂNDIA D OESTE','NOVA MAMORÉ','NOVA UNIÃO','NOVO HORIZONTE DO OESTE','OURO PRETO DO OESTE','PARECIS','PIMENTA BUENO','PIMENTEIRAS DO OESTE','PORTO VELHO','PRESIDENTE MÉDICI','PRIMAVERA DE RONDÔNIA','RIO CRESPO','ROLIM DE MOURA','SANTA LUZIA D OESTE','SÃO FELIPE D OESTE','SÃO FRANCISCO DO GUAPORÉ','SÃO MIGUEL DO GUAPORÉ','SERINGUEIRAS','TEIXEIRÓPOLIS','THEOBROMA','URUPÁ','VALE DO ANARI','VALE DO PARAÍSO','VILHENA'];
+function defaultAuxiliares(){ return {
+  municipios: MUNICIPIOS_RO.map(nome=>({id:uid('aux'), nome, macro: macroByMunicipio(nome), ativo:true})),
+  tiposServico: ['HOSPITAL GERAL','HOSPITAL ESPECIALIZADO','CLÍNICA','POLICLÍNICA','LABORATÓRIO','DIAGNÓSTICO POR IMAGEM','TERAPIA RENAL SUBSTITUTIVA','REABILITAÇÃO','CAPS','UPA','AMBULATÓRIO','SERVIÇO ESPECIALIZADO'].map(nome=>({id:uid('aux'), nome, ativo:true})),
+  naturezas: ['REDE PROPRIA','CONTRATUALIZADA','CREDENCIADA','CONVENIO','PACTUACAO','CONTRATO DE GESTAO'].map(nome=>({id:uid('aux'), nome, ativo:true})),
+  tiposInstrumento: ['CONTRATO','REDE PROPRIA','CONVENIO','PACTUACAO','CONTRATO DE GESTAO','TERMO DE CREDENCIAMENTO'].map(nome=>({id:uid('aux'), nome, ativo:true})),
+  gruposProcedimento: ['DIAGNÓSTICO','CONSULTAS','CIRURGIAS','INTERNAÇÃO','TERAPIAS','REABILITAÇÃO','EXAMES LABORATORIAIS','IMAGEM','OUTROS'].map(nome=>({id:uid('aux'), nome, ativo:true})),
+  motivosBloqueio: ['VIGÊNCIA EXPIRADA','PENDÊNCIA DOCUMENTAL','SUSPENSÃO CONTRATUAL','INATIVIDADE TEMPORÁRIA','AUDITORIA','DESCREDENCIAMENTO','OUTROS'].map(nome=>({id:uid('aux'), nome, ativo:true})),
+  situacoesVigencia: ['VIGENTE','A VENCER','VENCIDO','BLOQUEADO','INATIVO'].map(nome=>({id:uid('aux'), nome, ativo:true}))
+}; }
+function macroByMunicipio(m){ const macro1=['ALTO PARAÍSO','ARIQUEMES','BURITIS','CACAULÂNDIA','CAMPO NOVO DE RONDÔNIA','CANDEIAS DO JAMARI','CUJUBIM','GOVERNADOR JORGE TEIXEIRA','GUAJARÁ-MIRIM','ITAPUÃ DO OESTE','JARU','MACHADINHO DO OESTE','MONTE NEGRO','NOVA MAMORÉ','PORTO VELHO','RIO CRESPO','THEOBROMA','VALE DO ANARI']; return macro1.includes(upperClean(m))?'Macro 1':'Macro 2'; }
+function addAuxValue(tipo, nome, extra={}){ nome=upperClean(nome); if(!nome || !AUX_TIPOS[tipo]) return; const aux=read('auxiliares.json', defaultAuxiliares()); aux[tipo]=aux[tipo]||[]; let item=aux[tipo].find(x=>upperClean(x.nome)===nome); if(item){ if(extra.macro && !item.macro) item.macro=extra.macro; item.ativo=true; } else { item={id:uid('aux'), nome, ativo:true, ...extra}; aux[tipo].push(item); } write('auxiliares.json', aux); }
+function syncAuxiliares(){ const aux=read('auxiliares.json', null) || defaultAuxiliares(); const ps=read('prestadores.json',[]); ps.forEach(p=>{ if(p.municipio){ const m=upperClean(p.municipio); aux.municipios=aux.municipios||[]; if(!aux.municipios.some(x=>upperClean(x.nome)===m)) aux.municipios.push({id:uid('aux'), nome:m, macro:macroByMunicipio(m), ativo:true}); } (p.instrumentos||[]).forEach(i=>{ [['tiposServico',i.servico],['naturezas',i.natureza],['tiposInstrumento',i.tipo],['motivosBloqueio',i.motivoBloqueio]].forEach(([t,v])=>{ const n=upperClean(v); if(n){ aux[t]=aux[t]||[]; if(!aux[t].some(x=>upperClean(x.nome)===n)) aux[t].push({id:uid('aux'), nome:n, ativo:true}); } }); (i.procedimentos||[]).forEach(pr=>{}); }); }); write('auxiliares.json', aux); }
+
 function brToIso(d){ const m=String(d||'').trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m) return ''; return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
 function user(){return (req,res,next)=>next()}
 function auth(req,res,next){ if(!req.session.user) return res.status(401).json({erro:'Não autenticado'}); next(); }
@@ -68,10 +132,16 @@ function competenciaFechada(mes){ return read('competencias.json',[]).some(c=>c.
 bootstrap();
 
 app.get('/',(req,res)=>res.redirect('/sigoa/'));
+app.get('/api/health',(req,res)=>res.json({ok:true, storage: USE_DB ? 'postgres' : 'json', time: now()}));
 app.get('/api/me',(req,res)=>res.json({user:req.session.user||null}));
 app.post('/api/login',(req,res)=>{ const {login,senha}=req.body; const u=read('usuarios.json',[]).find(x=>x.login===login); if(!u || !bcrypt.compareSync(senha||'',u.senha)) return res.status(401).json({erro:'Login ou senha inválidos'}); if(u.status!=='ATIVO') return res.status(403).json({erro:'Usuário bloqueado ou inativo'}); req.session.user={id:u.id,nome:u.nome,login:u.login,perfil:u.perfil,trocarSenha:!!u.trocarSenha}; res.json({ok:true,user:req.session.user}); });
 app.post('/api/logout',(req,res)=>req.session.destroy(()=>res.json({ok:true})));
 app.post('/api/minha-senha',auth,(req,res)=>{ const {senhaAtual,novaSenha}=req.body; const users=read('usuarios.json',[]); const u=users.find(x=>x.id===req.session.user.id); if(!bcrypt.compareSync(senhaAtual||'',u.senha)) return res.status(400).json({erro:'Senha atual incorreta'}); u.senha=bcrypt.hashSync(novaSenha||'',10); u.trocarSenha=false; write('usuarios.json',users); audit(req,'ALTERAR_PROPRIA_SENHA','usuario',u.id,[]); res.json({ok:true}); });
+
+
+app.get('/api/auxiliares',auth,(req,res)=>res.json(read('auxiliares.json', defaultAuxiliares())));
+app.post('/api/auxiliares/:tipo',canWrite,(req,res)=>{ const tipo=req.params.tipo; if(!AUX_TIPOS[tipo]) return res.status(400).json({erro:'Lista auxiliar inválida'}); const aux=read('auxiliares.json', defaultAuxiliares()); aux[tipo]=aux[tipo]||[]; const nome=upperClean(req.body.nome); if(!nome) return res.status(400).json({erro:'Informe o nome'}); let item=aux[tipo].find(x=>upperClean(x.nome)===nome); if(item){ item.ativo=true; if(tipo==='municipios') item.macro=req.body.macro||item.macro||macroByMunicipio(nome); } else { item={id:uid('aux'), nome, ativo:true}; if(tipo==='municipios') item.macro=req.body.macro||macroByMunicipio(nome); aux[tipo].push(item); } write('auxiliares.json', aux); audit(req,'CADASTRO_AUXILIAR','auxiliar',item.id,[{campo:tipo,novo:item.nome}]); res.json(item); });
+app.put('/api/auxiliares/:tipo/:id',canWrite,(req,res)=>{ const tipo=req.params.tipo; if(!AUX_TIPOS[tipo]) return res.status(400).json({erro:'Lista auxiliar inválida'}); const aux=read('auxiliares.json', defaultAuxiliares()); const item=(aux[tipo]||[]).find(x=>x.id===req.params.id); if(!item) return res.status(404).json({erro:'Item não encontrado'}); const old={...item}; if(req.body.nome!==undefined)item.nome=upperClean(req.body.nome); if(req.body.ativo!==undefined)item.ativo=!!req.body.ativo; if(tipo==='municipios' && req.body.macro!==undefined)item.macro=req.body.macro; write('auxiliares.json', aux); audit(req,'ALTERAR_CADASTRO_AUXILIAR','auxiliar',item.id,diff(old,item,['nome','macro','ativo'])); res.json(item); });
 
 app.get('/api/usuarios',roles('ADMINISTRADOR'),(req,res)=>res.json(read('usuarios.json',[]).map(({senha,...u})=>u)));
 app.post('/api/usuarios',roles('ADMINISTRADOR'),(req,res)=>{ const users=read('usuarios.json',[]); if(users.some(u=>u.login===req.body.login)) return res.status(400).json({erro:'Login já existe'}); const u={id:uid('u'), nome:req.body.nome, login:req.body.login, perfil:req.body.perfil, status:'ATIVO', motivoBloqueio:'', senha:bcrypt.hashSync(req.body.senha||'123456',10), trocarSenha:true}; users.push(u); write('usuarios.json',users); audit(req,'CRIAR_USUARIO','usuario',u.id,[{campo:'login',novo:u.login},{campo:'perfil',novo:u.perfil}]); res.json({ok:true}); });
@@ -79,11 +149,11 @@ app.put('/api/usuarios/:id',roles('ADMINISTRADOR'),(req,res)=>{ const users=read
  write('usuarios.json',users); const d=diff(old,u,['nome','perfil','status','motivoBloqueio','trocarSenha']); if(req.body.resetarSenha)d.push({campo:'senha',anterior:'******',novo:'senha resetada'}); audit(req,'ALTERAR_USUARIO','usuario',u.id,d); res.json({ok:true}); });
 
 app.get('/api/prestadores',auth,(req,res)=>res.json(read('prestadores.json',[])));
-app.post('/api/prestadores',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p={id:uid('p'), nome:req.body.nome, municipio:req.body.municipio, cnpj:req.body.cnpj||'', ativo:true, observacaoGeral:req.body.observacaoGeral||'', instrumentos:[]}; ps.push(p); write('prestadores.json',ps); audit(req,'CRIAR_PRESTADOR','prestador',p.id,[{campo:'nome',novo:p.nome},{campo:'municipio',novo:p.municipio}]); res.json(p); });
-app.put('/api/prestadores/:id',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p=ps.find(x=>x.id===req.params.id); if(!p) return res.status(404).json({erro:'Não encontrado'}); const old={...p}; ['nome','municipio','cnpj','ativo','observacaoGeral'].forEach(c=>{ if(req.body[c]!==undefined)p[c]=req.body[c]; }); write('prestadores.json',ps); audit(req,'ALTERAR_PRESTADOR','prestador',p.id,diff(old,p,['nome','municipio','cnpj','ativo','observacaoGeral'])); res.json(p); });
-app.post('/api/prestadores/:id/instrumentos',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p=ps.find(x=>x.id===req.params.id); if(!p) return res.status(404).json({erro:'Prestador não encontrado'}); const i={id:uid('i'), tipo:req.body.tipo||'CONTRATO', natureza:req.body.natureza||'CONTRATUALIZADA', numero:req.body.numero||'', vigenciaInicio:req.body.vigenciaInicio||'', vigenciaFim:req.body.vigenciaFim||'', servico:req.body.servico||'', ativo:true, bloqueado:false, motivoBloqueio:'', observacao:req.body.observacao||'', procedimentos:[]}; p.instrumentos.push(i); write('prestadores.json',ps); audit(req,'CRIAR_INSTRUMENTO','instrumento',i.id,[{campo:'prestador',novo:p.nome},{campo:'servico',novo:i.servico},{campo:'numero',novo:i.numero}]); res.json(i); });
+app.post('/api/prestadores',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p={id:uid('p'), nome:req.body.nome, municipio:req.body.municipio, cnpj:req.body.cnpj||'', ativo:true, observacaoGeral:req.body.observacaoGeral||'', instrumentos:[]}; ps.push(p); addAuxValue('municipios', p.municipio, {macro: macroByMunicipio(p.municipio)}); write('prestadores.json',ps); audit(req,'CRIAR_PRESTADOR','prestador',p.id,[{campo:'nome',novo:p.nome},{campo:'municipio',novo:p.municipio}]); res.json(p); });
+app.put('/api/prestadores/:id',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p=ps.find(x=>x.id===req.params.id); if(!p) return res.status(404).json({erro:'Não encontrado'}); const old={...p}; ['nome','municipio','cnpj','ativo','observacaoGeral'].forEach(c=>{ if(req.body[c]!==undefined)p[c]=req.body[c]; }); addAuxValue('municipios', p.municipio, {macro: macroByMunicipio(p.municipio)}); write('prestadores.json',ps); audit(req,'ALTERAR_PRESTADOR','prestador',p.id,diff(old,p,['nome','municipio','cnpj','ativo','observacaoGeral'])); res.json(p); });
+app.post('/api/prestadores/:id/instrumentos',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const p=ps.find(x=>x.id===req.params.id); if(!p) return res.status(404).json({erro:'Prestador não encontrado'}); const i={id:uid('i'), tipo:req.body.tipo||'CONTRATO', natureza:req.body.natureza||'CONTRATUALIZADA', numero:req.body.numero||'', vigenciaInicio:req.body.vigenciaInicio||'', vigenciaFim:req.body.vigenciaFim||'', servico:req.body.servico||'', ativo:true, bloqueado:false, motivoBloqueio:'', observacao:req.body.observacao||'', procedimentos:[]}; p.instrumentos.push(i); addAuxValue('tiposInstrumento', i.tipo); addAuxValue('naturezas', i.natureza); addAuxValue('tiposServico', i.servico); write('prestadores.json',ps); audit(req,'CRIAR_INSTRUMENTO','instrumento',i.id,[{campo:'prestador',novo:p.nome},{campo:'servico',novo:i.servico},{campo:'numero',novo:i.numero}]); res.json(i); });
 app.post('/api/prestadores/:id/instrumentos/:iid/duplicar',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,req.params.id,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const novo=JSON.parse(JSON.stringify(i)); novo.id=uid('i'); novo.numero=req.body.numero||''; novo.vigenciaInicio=req.body.vigenciaInicio||''; novo.vigenciaFim=req.body.vigenciaFim||''; novo.servico=req.body.servico||i.servico; p.instrumentos.push(novo); write('prestadores.json',ps); audit(req,'DUPLICAR_INSTRUMENTO','instrumento',novo.id,[{campo:'origem',novo:i.numero},{campo:'novo',novo:novo.numero}]); res.json(novo); });
-app.put('/api/prestadores/:id/instrumentos/:iid',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const {i}=findInstrumento(ps,req.params.id,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const old=JSON.parse(JSON.stringify(i)); ['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','ativo','bloqueado','motivoBloqueio','observacao'].forEach(c=>{ if(req.body[c]!==undefined)i[c]=req.body[c]; }); write('prestadores.json',ps); audit(req,'ALTERAR_INSTRUMENTO','instrumento',i.id,diff(old,i,['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','ativo','bloqueado','motivoBloqueio','observacao'])); res.json(i); });
+app.put('/api/prestadores/:id/instrumentos/:iid',canWrite,(req,res)=>{ const ps=read('prestadores.json',[]); const {i}=findInstrumento(ps,req.params.id,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const old=JSON.parse(JSON.stringify(i)); ['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','ativo','bloqueado','motivoBloqueio','observacao'].forEach(c=>{ if(req.body[c]!==undefined)i[c]=req.body[c]; }); addAuxValue('tiposInstrumento', i.tipo); addAuxValue('naturezas', i.natureza); addAuxValue('tiposServico', i.servico); addAuxValue('motivosBloqueio', i.motivoBloqueio); write('prestadores.json',ps); audit(req,'ALTERAR_INSTRUMENTO','instrumento',i.id,diff(old,i,['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','ativo','bloqueado','motivoBloqueio','observacao'])); res.json(i); });
 
 app.get('/api/sigtap',auth,(req,res)=>{ const q=String(req.query.q||'').toUpperCase(); let a=read('sigtap.json',[]); if(q) a=a.filter(x=>x.nome.includes(q)||String(x.codigo).includes(q)||String(x.grupo||'').includes(q)||String(x.subgrupo||'').includes(q)); res.json(a); });
 app.post('/api/sigtap',canWrite,(req,res)=>{ const a=read('sigtap.json',[]); if(a.some(x=>onlyDigits(x.codigo)===onlyDigits(req.body.codigo))) return res.status(400).json({erro:'Código SIGTAP já cadastrado'}); const p={codigo:req.body.codigo,nome:String(req.body.nome||'').toUpperCase(),grupo:req.body.grupo||'',subgrupo:req.body.subgrupo||'',ativo:true}; a.push(p); write('sigtap.json',a); audit(req,'CRIAR_SIGTAP','sigtap',p.codigo,[{campo:'procedimento',novo:p.nome}]); res.json(p); });
@@ -142,4 +212,14 @@ app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{ return 
 
 app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
 
-app.listen(PORT,()=>console.log('SIGOA rodando na porta '+PORT));
+async function start(){
+  try{
+    await initDatabase();
+    bootstrap();
+    app.listen(PORT,()=>console.log('SIGOA rodando na porta '+PORT+' | armazenamento: '+(USE_DB?'PostgreSQL/Supabase':'JSON local')));
+  }catch(e){
+    console.error('Falha ao iniciar:', e);
+    process.exit(1);
+  }
+}
+start();
