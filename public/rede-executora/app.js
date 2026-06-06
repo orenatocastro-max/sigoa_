@@ -128,6 +128,7 @@ function relatoriosDrawer(){
     <button class="drawerOption" onclick="openGroupedReport('Prestadores por município','Distribuição de prestadores e serviços por município.', reportByMunicipio())"><strong>Prestadores por município</strong><span>${municipios().length} município(s)</span></button>
     <button class="drawerOption" onclick="openGroupedReport('Serviços ofertados','Quantidade de prestadores/municípios por tipo de serviço.', reportByServico())"><strong>Serviços ofertados</strong><span>${servicos().length} serviço(s)</span></button>
     <button class="drawerOption" onclick="openGroupedReport('Procedimentos por prestador','Rol consolidado de procedimentos vinculados aos prestadores.', reportProcedimentosPrestador())"><strong>Procedimentos por prestador</strong><span>${prestadores().length} prestador(es)</span></button>
+    <button class="drawerOption macroServiceCard" onclick="openGroupedReport('Resumo por procedimentos','Soma do quantitativo de todos os prestadores para cada procedimento.', reportResumoProcedimentos())"><strong>Resumo por procedimentos</strong><span>Soma todos os prestadores por procedimento</span></button>
     <button class="drawerOption attention" onclick='selectRows(${JSON.stringify({title:'Contratos e vigências críticas', subtitle:'Contratos vencidos ou com vencimento em até 60 dias.', rows:criticas, sourcePanel:'relatorios'})})'><strong>Contratos e vigências críticas</strong><span>${criticas.length} registro(s)</span></button>
     <button class="drawerOption danger" onclick='selectRows(${JSON.stringify({title:'Serviços bloqueados', subtitle:'Prestadores/serviços bloqueados e respectivos motivos.', rows:bloqueados, sourcePanel:'relatorios'})})'><strong>Serviços bloqueados</strong><span>${bloqueados.length} bloqueio(s)</span></button>
     <button class="drawerOption macroServiceCard" onclick="openGroupedReport('Panorama por macrorregião','Resumo dividido em Macro 1 e Macro 2.', reportByMacro())"><strong>Panorama por macrorregião</strong><span>Macro 1 e Macro 2</span></button>
@@ -137,6 +138,34 @@ function relatoriosDrawer(){
 function reportByMunicipio(){ return municipios().map(m => ({titulo:m, linhas:rowsByMunicipio(m).map(r=>`${r.prestador} • ${r.servico} • ${naturezaLabel(r.natureza)}${r.contrato_fim?' • Vigência: '+brDate(r.contrato_fim):''}`)})); }
 function reportByServico(){ return servicos().map(s => ({titulo:s, linhas:rowsByServico(s).map(r=>`${r.prestador} • ${r.municipio} • ${naturezaLabel(r.natureza)}${r.observacao?' • '+r.observacao:''}`)})); }
 function reportProcedimentosPrestador(){ return prestadores().map(p => { const d=providerDetail(p); return {titulo:p, subtitulo:d.municipio, linhas:d.procedimentos.length?d.procedimentos:['Nenhum procedimento cadastrado.']}; }); }
+function reportResumoProcedimentos(){
+  const mapa = new Map();
+  procFlat().forEach(p => {
+    const codigo = String(p.codigo || '').trim();
+    const nome = String(p.nome || 'Procedimento não informado').trim();
+    const chave = `${codigo}|${norm(nome)}`;
+    if(!mapa.has(chave)){
+      mapa.set(chave, { codigo, nome, total:0, prestadores:new Set(), municipios:new Set(), servicos:new Set() });
+    }
+    const item = mapa.get(chave);
+    const qtd = p.oferta === '-' ? 0 : Number(p.oferta || 0);
+    item.total += Number.isFinite(qtd) ? qtd : 0;
+    if(p.prestador) item.prestadores.add(p.prestador);
+    if(p.municipio) item.municipios.add(p.municipio);
+    if(p.servico) item.servicos.add(p.servico);
+  });
+  const itens = [...mapa.values()].sort((a,b)=>b.total-a.total || a.nome.localeCompare(b.nome,'pt-BR'));
+  return itens.map(x => ({
+    titulo: `${x.codigo ? x.codigo + ' - ' : ''}${x.nome}`,
+    subtitulo: `Total ofertado: ${fmt(x.total)} • ${x.prestadores.size} prestador(es) • ${x.municipios.size} município(s)`,
+    linhas: [
+      `Total do procedimento: ${fmt(x.total)}`,
+      `Prestadores vinculados: ${x.prestadores.size ? [...x.prestadores].sort((a,b)=>a.localeCompare(b,'pt-BR')).join(' • ') : 'Nenhum prestador vinculado'}`,
+      `Municípios: ${x.municipios.size ? [...x.municipios].sort((a,b)=>a.localeCompare(b,'pt-BR')).join(' • ') : 'Nenhum município informado'}`,
+      `Serviços relacionados: ${x.servicos.size ? [...x.servicos].sort((a,b)=>a.localeCompare(b,'pt-BR')).join(' • ') : 'Nenhum serviço informado'}`
+    ]
+  }));
+}
 function reportByNatureza(){ const rows=flat(); const naturezas=uniq(rows.map(r=>naturezaLabel(r.natureza))); return naturezas.map(n => ({titulo:n, linhas:rows.filter(r=>naturezaLabel(r.natureza)===n).map(r=>`${r.prestador} • ${r.municipio} • ${r.servico}`)})); }
 function reportByMacro(){ return ['Macro 1','Macro 2'].map(m=>{ const resumo=macroResumo(m); return {titulo:m, subtitulo:`${resumo.municipios.length} município(s) • ${resumo.prestadores} prestador(es) • ${resumo.servicos} serviço(s)`, linhas:resumo.rows.map(r=>`${r.municipio} • ${r.prestador} • ${r.servico} • ${naturezaLabel(r.natureza)}`)}; }); }
 function openGroupedReport(title, subtitle, grupos){
