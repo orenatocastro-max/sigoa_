@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { background:#eef2f6; font-family: system-ui, Segoe UI, Arial, sans-serif; overflow:hidden; }
+    .mapShell { height:100%; display:grid; grid-template-rows: 42px 1fr; background:#eef2f6; }
+    .mapToolbar {
+      display:flex; align-items:center; gap:8px; padding:6px 8px;
+      background:rgba(255,255,255,.96); border-bottom:1px solid #d8e0e8;
+      color:#17212f; min-width:0;
+    }
+    .mapTitle { min-width:0; flex:1; }
+    .mapTitle small { display:block; color:#6b7280; font-weight:850; text-transform:uppercase; letter-spacing:.08em; font-size:9px; line-height:1.1; }
+    .mapTitle strong { display:block; margin-top:1px; font-size:12px; line-height:1.12; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .zoomTools { display:flex; align-items:center; gap:4px; flex:0 0 auto; }
+    .zoomTools button {
+      width:30px; height:30px; border:1px solid #cbd5df; border-radius:10px;
+      background:#fff; color:#17212f; font-size:20px; line-height:1; cursor:pointer;
+      box-shadow:0 4px 12px rgba(15,23,42,.08);
+    }
+    .zoomTools button:hover { background:#f4f7fa; }
+    #map { height:100%; width:100%; }
+    .leaflet-container { background:#eef2f6; }
+    .leaflet-control-container { display:none; }
+  </style>
+</head>
+<body>
+  <div class="mapShell">
+    <div class="mapToolbar">
+      <div class="mapTitle"><small>Município</small><strong id="mapName">Passe o mouse no município</strong></div>
+      <div class="zoomTools" aria-label="Controles do mapa">
+        <button type="button" id="zoomIn" title="Aproximar">+</button>
+        <button type="button" id="zoomOut" title="Afastar">−</button>
+        <button type="button" id="resetMap" title="Voltar ao início">⌂</button>
+      </div>
+    </div>
+    <div id="map"></div>
+  </div>
+  <script>
+    const norm = (s) => String(s || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/\s+/g,' ').trim().toUpperCase();
+
+    const REGIONS = {
+      "CONE SUL": ["CABIXI","CEREJEIRAS","COLORADO DO OESTE","CORUMBIARA","CHUPINGUAIA","PIMENTEIRAS DO OESTE","VILHENA"],
+      "CAFE": ["CACOAL","ESPIGAO D'OESTE","MINISTRO ANDREAZZA","PIMENTA BUENO","PRIMAVERA DE RONDONIA","SAO FELIPE D'OESTE"],
+      "ZONA DA MATA": ["ALTA FLORESTA D'OESTE","ALTO ALEGRE DOS PARECIS","CASTANHEIRAS","NOVO HORIZONTE DO OESTE","NOVA BRASILANDIA D'OESTE","PARECIS","ROLIM DE MOURA","SANTA LUZIA D'OESTE"],
+      "CENTRAL": ["ALVORADA D'OESTE","GOVERNADOR JORGE TEIXEIRA","JI-PARANA","JARU","MIRANTE DA SERRA","OURO PRETO DO OESTE","NOVA UNIAO","PRESIDENTE MEDICI","SAO MIGUEL DO GUAPORE","URUPA","VALE DO PARAISO","THEOBROMA","VALE DO ANARI","TEIXEIROPOLIS"],
+      "VALE DO GUAPORE": ["COSTA MARQUES","SAO FRANCISCO DO GUAPORE","SERINGUEIRAS"],
+      "VALE DO JAMARI": ["ARIQUEMES","ALTO PARAISO","BURITIS","CACAULANDIA","CAMPO NOVO DE RONDONIA","CUJUBIM","MONTE NEGRO","MACHADINHO D'OESTE","RIO CRESPO"],
+      "MADEIRA MAMORE": ["CANDEIAS DO JAMARI","GUAJARA-MIRIM","ITAPUA DO OESTE","NOVA MAMORE","PORTO VELHO"]
+    };
+    const COLORS = {
+      "CONE SUL":"#7C3AED", "CAFE":"#F59E0B", "ZONA DA MATA":"#10B981",
+      "CENTRAL":"#38BDF8", "VALE DO GUAPORE":"#FDE047", "VALE DO JAMARI":"#EC4899", "MADEIRA MAMORE":"#15803D"
+    };
+    const REGION_BY_MUN = new Map();
+    Object.entries(REGIONS).forEach(([r, ms]) => ms.forEach(m => REGION_BY_MUN.set(norm(m), r)));
+    const getRegion = (name) => REGION_BY_MUN.get(norm(name)) || '';
+    const getColor = (name) => COLORS[getRegion(name)] || '#64748b';
+
+    let municipiosComOferta = new Set();
+    const possuiOferta = (name) => municipiosComOferta.has(norm(name));
+
+    function atualizarOfertaNoMapa(municipios) {
+      municipiosComOferta = new Set((municipios || []).map((m) => norm(m)));
+      if (geoLayer) {
+        geoLayer.eachLayer((layer) => {
+          geoLayer.resetStyle(layer);
+        });
+      }
+    }
+
+    const map = L.map('map', { zoomControl: false, attributionControl: false, scrollWheelZoom: false }).setView([-10.9, -63.1], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+    const nameEl = document.getElementById('mapName');
+    const url = 'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-11-mun.json';
+    let geoLayer;
+    let selectedLayer = null;
+
+    function baseStyle(feature) {
+      const n = feature?.properties?.name || feature?.properties?.NM_MUN || '';
+      const temOferta = possuiOferta(n);
+      return {
+        color:'#ffffff',
+        weight:1.2,
+        fillColor: getColor(n),
+        fillOpacity: temOferta ? .80 : .30
+      };
+    }
+    function resetMapView() {
+      if (geoLayer) {
+        geoLayer.eachLayer((layer) => geoLayer.resetStyle(layer));
+        map.fitBounds(geoLayer.getBounds(), { padding:[8,8], animate:false });
+      } else {
+        map.setView([-10.9, -63.1], 6, { animate:false });
+      }
+      selectedLayer = null;
+      nameEl.textContent = 'Passe o mouse no município';
+    }
+
+    document.getElementById('zoomIn').addEventListener('click', () => map.zoomIn());
+    document.getElementById('zoomOut').addEventListener('click', () => map.zoomOut());
+    document.getElementById('resetMap').addEventListener('click', resetMapView);
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'RO_MAP_RESET') resetMapView();
+      if (event.data?.type === 'RO_MUNICIPIOS_COM_OFERTA') {
+        atualizarOfertaNoMapa(event.data.municipios || []);
+      }
+    });
+
+    fetch(url).then(r => r.json()).then(geo => {
+      geoLayer = L.geoJSON(geo, {
+        style: baseStyle,
+        onEachFeature: (feature, layer) => {
+          const nome = feature?.properties?.name || feature?.properties?.NM_MUN || 'MUNICÍPIO';
+          layer.on('mouseover', () => {
+            if (layer !== selectedLayer) layer.setStyle({ weight:3, fillOpacity: possuiOferta(nome) ? .92 : .45 });
+            nameEl.textContent = nome;
+          });
+          layer.on('mouseout', () => {
+            if (layer !== selectedLayer) geoLayer.resetStyle(layer);
+            if (!selectedLayer) nameEl.textContent = 'Passe o mouse no município';
+            else nameEl.textContent = selectedLayer.__municipioNome || nome;
+          });
+          layer.on('click', () => {
+            if (selectedLayer && selectedLayer !== layer) geoLayer.resetStyle(selectedLayer);
+            selectedLayer = layer;
+            layer.__municipioNome = nome;
+            layer.setStyle({ weight:3.5, fillOpacity: possuiOferta(nome) ? .95 : .50 });
+            nameEl.textContent = nome;
+            window.parent.postMessage({ type:'RO_MUNICIPIO_CLICK', municipio:nome }, '*');
+            // Não redimensiona nem altera o enquadramento ao clicar no município.
+          });
+        }
+      }).addTo(map);
+      setTimeout(resetMapView, 80);
+    }).catch(() => {
+      nameEl.textContent = 'Não foi possível carregar a malha. Verifique a internet.';
+    });
+  </script>
+</body>
+</html>
