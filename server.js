@@ -108,7 +108,7 @@ app.post('/api/competencias/:mes/fechar',roles('ADMINISTRADOR'),(req,res)=>{ con
 
 function publicCheck(req,res,next){ if((req.headers['x-api-key']||req.query.key)!==PUBLIC_API_KEY) return res.status(401).json({erro:'API key inválida'}); next(); }
 
-app.post('/api/public/rede-executora/prestadores/:id/bloqueio', publicCheck, (req,res)=>{
+app.post('/api/public/rede-executora/prestadores/:id/bloqueio', publicCheck, (req,res)=>{ return res.status(403).json({erro:'Painel Rede Executora é apenas para consulta. Use o SIGOA administrativo.'});
   const ps=read('prestadores.json',[]);
   const p=ps.find(x=>x.id===req.params.id);
   if(!p) return res.status(404).json({erro:'Prestador não encontrado'});
@@ -121,7 +121,7 @@ app.post('/api/public/rede-executora/prestadores/:id/bloqueio', publicCheck, (re
   res.json({ok:true, prestador:p});
 });
 
-app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{
+app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{ return res.status(403).json({erro:'Painel Rede Executora é apenas para consulta. Use o SIGOA administrativo.'});
   const {mes, prestadorId, instrumentoId, itens}=req.body;
   const ps=read('prestadores.json',[]);
   const {p,i}=findInstrumento(ps,prestadorId,instrumentoId);
