@@ -2,3 +2,4 @@
 
 .login h3{margin:0 0 12px;color:#0f3b63;font-size:16px}.side .small{font-size:12px;opacity:.9;margin-top:-8px;margin-bottom:16px}
 .report-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.report-grid button{min-height:58px;text-align:center;background:#0f3b63}.card h2{margin-top:0}@media(max-width:1100px){.report-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.report-grid{grid-template-columns:1fr}}
+.checks{max-height:260px;overflow:auto;border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;margin:8px 0 12px}.checks label{font-size:13px;font-weight:400;color:#1f2937;margin:6px 0;display:flex;gap:8px;align-items:center}.checks input{width:auto}.total-card{border-left:6px solid #0f3b63}.total-card h2{font-size:34px;margin:8px 0;color:#0f3b63}
