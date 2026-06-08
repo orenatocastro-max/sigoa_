@@ -1,0 +1,38 @@
+[
+  {
+    "id": "u_1780930308345_2o4q06",
+    "nome": "Administrador",
+    "login": "admin",
+    "perfil": "ADMINISTRADOR",
+    "status": "ATIVO",
+    "senha": "$2a$10$CzoyaQxkHP4u5nxsAK8nh.MUYlsYM4iYhR5AGbifiK4BgBWc40JhC",
+    "trocarSenha": false
+  },
+  {
+    "id": "u_1780930308463_uc83n5",
+    "nome": "Operador",
+    "login": "operador",
+    "perfil": "OPERADOR",
+    "status": "ATIVO",
+    "senha": "$2a$10$AnhL6awyUy6H4fgpdi62Oeeruj2yZmX22nYJb1yISUnecTBgtAvpS",
+    "trocarSenha": false
+  },
+  {
+    "id": "u_1780930308562_vdkdc7",
+    "nome": "Auditor",
+    "login": "auditor",
+    "perfil": "AUDITOR",
+    "status": "ATIVO",
+    "senha": "$2a$10$mGhEi.urVXtiOn1p3oEh9uRkFScKsIleSrdwBt165IbTNGqvvusRq",
+    "trocarSenha": false
+  },
+  {
+    "id": "u_1780930308656_ss6nkn",
+    "nome": "Consulta",
+    "login": "consulta",
+    "perfil": "CONSULTA",
+    "status": "ATIVO",
+    "senha": "$2a$10$SZwgd3A6aAMEe2O6nAu/QutoiH28TG3WuhJQHn476Vt6vzxMUEPyW",
+    "trocarSenha": false
+  }
+]

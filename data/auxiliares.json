@@ -1,0 +1,674 @@
+{
+  "municipios": [
+    {
+      "id": "aux_1780930308761_zzy84d",
+      "nome": "ALTA FLORESTA D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_9tr1vo",
+      "nome": "ALTO ALEGRE DOS PARECIS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_nft78t",
+      "nome": "ALTO PARAÍSO",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_tbxjxc",
+      "nome": "ALVORADA D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_rcu1au",
+      "nome": "ARIQUEMES",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_31iavl",
+      "nome": "BURITIS",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_m4f5eq",
+      "nome": "CABIXI",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_4bppq9",
+      "nome": "CACAULÂNDIA",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_yxblcy",
+      "nome": "CACOAL",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_g4fnr5",
+      "nome": "CAMPO NOVO DE RONDÔNIA",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_m841rh",
+      "nome": "CANDEIAS DO JAMARI",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_k6o29p",
+      "nome": "CASTANHEIRAS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_w18237",
+      "nome": "CEREJEIRAS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_9wajmw",
+      "nome": "CHUPINGUAIA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_dwdkwv",
+      "nome": "COLORADO DO OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ohejpg",
+      "nome": "CORUMBIARA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_zio5wo",
+      "nome": "COSTA MARQUES",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_utoqro",
+      "nome": "CUJUBIM",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_97axr8",
+      "nome": "ESPIGÃO D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_wxk923",
+      "nome": "GOVERNADOR JORGE TEIXEIRA",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_seqiu7",
+      "nome": "GUAJARÁ-MIRIM",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_9lag75",
+      "nome": "ITAPUÃ DO OESTE",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_4gqcnr",
+      "nome": "JARU",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_11my36",
+      "nome": "JI-PARANÁ",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_8r5ehs",
+      "nome": "MACHADINHO DO OESTE",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ne3ng4",
+      "nome": "MINISTRO ANDREAZZA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_nx1m1w",
+      "nome": "MIRANTE DA SERRA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_3fgpvx",
+      "nome": "MONTE NEGRO",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_eg5kw3",
+      "nome": "NOVA BRASILÂNDIA D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_9nzgwl",
+      "nome": "NOVA MAMORÉ",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_zh5kfd",
+      "nome": "NOVA UNIÃO",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_om7deq",
+      "nome": "NOVO HORIZONTE DO OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_sjpf59",
+      "nome": "OURO PRETO DO OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_rtsgve",
+      "nome": "PARECIS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_27zzc6",
+      "nome": "PIMENTA BUENO",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_gk4pxj",
+      "nome": "PIMENTEIRAS DO OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_1cw0r4",
+      "nome": "PORTO VELHO",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_hsz74y",
+      "nome": "PRESIDENTE MÉDICI",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ve7ylv",
+      "nome": "PRIMAVERA DE RONDÔNIA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_my2b30",
+      "nome": "RIO CRESPO",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_7pwrvy",
+      "nome": "ROLIM DE MOURA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_7oafdy",
+      "nome": "SANTA LUZIA D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_31riv2",
+      "nome": "SÃO FELIPE D OESTE",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_y00tjx",
+      "nome": "SÃO FRANCISCO DO GUAPORÉ",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_hx6dsm",
+      "nome": "SÃO MIGUEL DO GUAPORÉ",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ovqxe0",
+      "nome": "SERINGUEIRAS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_byw0ka",
+      "nome": "TEIXEIRÓPOLIS",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_u232co",
+      "nome": "THEOBROMA",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_glyfuc",
+      "nome": "URUPÁ",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_mvbtvt",
+      "nome": "VALE DO ANARI",
+      "macro": "Macro 1",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_d69qrf",
+      "nome": "VALE DO PARAÍSO",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_1atsn3",
+      "nome": "VILHENA",
+      "macro": "Macro 2",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308765_bycz2j",
+      "nome": "GUAJARA-MIRIM",
+      "macro": "Macro 2",
+      "ativo": true
+    }
+  ],
+  "tiposServico": [
+    {
+      "id": "aux_1780930308761_y14kqe",
+      "nome": "HOSPITAL GERAL",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_rtsjsq",
+      "nome": "HOSPITAL ESPECIALIZADO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_8rr8k3",
+      "nome": "CLÍNICA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_hlq5ua",
+      "nome": "POLICLÍNICA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_pq4247",
+      "nome": "LABORATÓRIO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ywm5o5",
+      "nome": "DIAGNÓSTICO POR IMAGEM",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_k3p5ln",
+      "nome": "TERAPIA RENAL SUBSTITUTIVA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_t89auz",
+      "nome": "REABILITAÇÃO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_fy89t0",
+      "nome": "CAPS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_9ng4gw",
+      "nome": "UPA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_e1bppr",
+      "nome": "AMBULATÓRIO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_kqilcf",
+      "nome": "SERVIÇO ESPECIALIZADO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_t2tbcu",
+      "nome": "CIRURGIAS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_acfnl0",
+      "nome": "LEITOS CLINICOS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_7toma7",
+      "nome": "DIAGNOSTICO (ULTRASSONOGRAFIA)",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_lt87yw",
+      "nome": "TERAPIA INTENSIVA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_akpq2y",
+      "nome": "DIAGNOSTICO: RM",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_xceuxb",
+      "nome": "DIAGNOSTICO: TC",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_wlsx8e",
+      "nome": "DIAGNOSTICO: ELETROENCEFALO E ELETRONEURO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_nam6d6",
+      "nome": "DIAGNOSTICO / TERAPIA ONCOLOGICA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_pths25",
+      "nome": "SAÚDE AUDITVA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_52wce1",
+      "nome": "DIAGNOSTICO: CINTILOGRAFIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_0w6kk4",
+      "nome": "DIAGNOSTICO: DENSITOMETRIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_bjo6hi",
+      "nome": "HEMODIALISE AMBULATORIAL (TRS)",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_wwslso",
+      "nome": "ODONTOLOGIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_py6f45",
+      "nome": "HEMODINAMICA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_98nzvs",
+      "nome": "NEUROCIRURGIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_kc7uzi",
+      "nome": "OFTALMOLOGIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_b9at51",
+      "nome": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_37jcg9",
+      "nome": "TRANSPORTE AEROMEDICO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308763_2yshyr",
+      "nome": "COMUNIDADES TERAPEUTICAS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308764_vjaho0",
+      "nome": "CIRURGIA CARDIACA NEO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308764_gqxc0p",
+      "nome": "CIRURGIA CARDIACA PED",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308764_4vjcbv",
+      "nome": "CIRURGIA CARDIACA ADULTO",
+      "ativo": true
+    }
+  ],
+  "naturezas": [
+    {
+      "id": "aux_1780930308761_0rnmf1",
+      "nome": "REDE PROPRIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_vzdiaf",
+      "nome": "CONTRATUALIZADA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_uwfxqj",
+      "nome": "CREDENCIADA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_bih84x",
+      "nome": "CONVENIO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_0a95am",
+      "nome": "PACTUACAO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_mports",
+      "nome": "CONTRATO DE GESTAO",
+      "ativo": true
+    }
+  ],
+  "tiposInstrumento": [
+    {
+      "id": "aux_1780930308761_hbyhtr",
+      "nome": "CONTRATO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_tywook",
+      "nome": "REDE PROPRIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_goz98k",
+      "nome": "CONVENIO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_alwem6",
+      "nome": "PACTUACAO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_v4rk13",
+      "nome": "CONTRATO DE GESTAO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_arevgo",
+      "nome": "TERMO DE CREDENCIAMENTO",
+      "ativo": true
+    }
+  ],
+  "gruposProcedimento": [
+    {
+      "id": "aux_1780930308761_6pll3n",
+      "nome": "DIAGNÓSTICO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_7uxk1a",
+      "nome": "CONSULTAS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_175860",
+      "nome": "CIRURGIAS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_udawra",
+      "nome": "INTERNAÇÃO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_qjxle4",
+      "nome": "TERAPIAS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_1jtagj",
+      "nome": "REABILITAÇÃO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_c8fx6k",
+      "nome": "EXAMES LABORATORIAIS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_3miqu9",
+      "nome": "IMAGEM",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_049j3f",
+      "nome": "OUTROS",
+      "ativo": true
+    }
+  ],
+  "motivosBloqueio": [
+    {
+      "id": "aux_1780930308761_9crsxv",
+      "nome": "VIGÊNCIA EXPIRADA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_8ox8pi",
+      "nome": "PENDÊNCIA DOCUMENTAL",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_6o63xb",
+      "nome": "SUSPENSÃO CONTRATUAL",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_nnb0iu",
+      "nome": "INATIVIDADE TEMPORÁRIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_amfq6f",
+      "nome": "AUDITORIA",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_4q7rcz",
+      "nome": "DESCREDENCIAMENTO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_qr1cnx",
+      "nome": "OUTROS",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308764_2dm1cu",
+      "nome": "EXCEDENTE DO LIMITE FINANCEIRO",
+      "ativo": true
+    }
+  ],
+  "situacoesVigencia": [
+    {
+      "id": "aux_1780930308761_sd624y",
+      "nome": "VIGENTE",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_j72pka",
+      "nome": "A VENCER",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_c3avb5",
+      "nome": "VENCIDO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_ceg83d",
+      "nome": "BLOQUEADO",
+      "ativo": true
+    },
+    {
+      "id": "aux_1780930308761_f2k05d",
+      "nome": "INATIVO",
+      "ativo": true
+    }
+  ]
+}

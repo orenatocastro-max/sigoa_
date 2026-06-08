@@ -1,0 +1,2098 @@
+[
+  {
+    "id": "p_1780930308756_55s77h",
+    "nome": "HOSPITAL SAMAR - PORTO VELHO",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308756_plwtgh",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "565/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-05",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_p7kg8s",
+    "nome": "HOSPITAL 9 DE JULHO DE RONDONIA LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_wz4l1l",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "280/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-27",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      },
+      {
+        "id": "i_1780930308758_q4zczc",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-27",
+        "servico": "LEITOS CLINICOS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_644i93",
+    "nome": "CASA DE SAUDE SANTA MARCELINA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_6x6kfa",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "309/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-10-23",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_zt99q1",
+    "nome": "HOSPITAL PRONTOCORDIS",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_q0xqu9",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "216/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-10",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_rlktn7",
+    "nome": "IRB PRIME CARE SERVICOS MEDICOS CLINICO HOSPITALAR LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_127hcf",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "217/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-11",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_1twppa",
+    "nome": "INSTITUTO DO CORACAO DE RONDONIA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_4sgw4u",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "219/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-27",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Rol de Procedimentos conforme Despacho 72237766",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_npbm8c",
+    "nome": "HOSPITAL DE RETAGUARDA DE RONDONIA - HRRO",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_nb1raq",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      },
+      {
+        "id": "i_1780930308758_7l4bww",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "DIAGNOSTICO (ULTRASSONOGRAFIA)",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_auz4jt",
+    "nome": "HOSPITAL DE BASE DR. ARY PINHEIRO",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_ricjgc",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_drjpqq",
+    "nome": "HOSPITAL DE BASE DR. ARY PINHEIRO (UTI)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_qpjq5a",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "22 Leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308757_4pkanj",
+    "nome": "HOSPITAL PRONTOCORDIS(RM)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308757_3cakjm",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1058/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-11-10",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_p8585z",
+    "nome": "ALPHACLIN - UNIDADE DE ULTRASSONOGRAFIA DE RONDONIA LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_b08akb",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "250/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-04-25",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_39i5xx",
+    "nome": "CENTRO DE DIAGNOSTICO RADIOIMAGEM(RM)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_tvc1cu",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "519/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-02",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Contraste e Sedação",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_mmw0tp",
+    "nome": "CENTRO DE DIAGNOSTICO RADIOIMAGEM LTDA(TC)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ygl4i2",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1083/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-11-14",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Contraste e Sedação",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_8xagq0",
+    "nome": "ENOCH - UNIDADE DE RADIODIAGNOSTICO E ULTRA-SONOGRAFIA LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ervxsv",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "533/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-23",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_uyg94s",
+    "nome": "NEUROPH",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_rbklt4",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "734/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-08-20",
+        "servico": "DIAGNOSTICO: ELETROENCEFALO E ELETRONEURO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_a75nya",
+    "nome": "HOSPITAL DE AMOR AMAZONIA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_x55jjj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "DIAGNOSTICO / TERAPIA ONCOLOGICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_2zy24p",
+    "nome": "HOSPITAL SAMAR - PORTO VELHO(TC)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_7y2iwt",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "571/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-25",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_dclmzx",
+    "nome": "HOSPITAL PRONTOCORDIS(TC)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_0s3e56",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "427/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-23",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_4lpz94",
+    "nome": "LIMIAR",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_vey8at",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1129/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-11-24",
+        "servico": "SAÚDE AUDITVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_28nsai",
+    "nome": "CENTRO DE MEDICINA NUCLEAR DE RONDONIA LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_uzmvrl",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "134/2022",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-03",
+        "servico": "DIAGNOSTICO: CINTILOGRAFIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_fqgqyr",
+    "nome": "DENSYA MEDICINA ESPECIALIZADA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ygx4jk",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "117/2024",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-02-18",
+        "servico": "DIAGNOSTICO: DENSITOMETRIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_hrkh1y",
+    "nome": "NEFRON SERVICOS DE NEFROLOGIA LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_rv77gs",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "240/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-04-25",
+        "servico": "HEMODIALISE AMBULATORIAL (TRS)",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_pkxrdd",
+    "nome": "CLINICA RENAL DE RONDONIA LTDA (CLINERON)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_kf22fj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "242/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-04-25",
+        "servico": "HEMODIALISE AMBULATORIAL (TRS)",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_4hn9bu",
+    "nome": "CERO - CENTRO DE REABILITACAO DO ESTADO DE RONDONIA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_quy1un",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "REABILITAÇÃO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_apyvyt",
+    "nome": "CEO - CENTRO ESPECIALIZADO EM ODONTOLOGIA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_us4s7z",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "ODONTOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_7tg7bv",
+    "nome": "ANGIOCENTER",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ky940a",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "749/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-08-11",
+        "servico": "HEMODINAMICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_wex6ks",
+    "nome": "CCATE",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_c7p3qv",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "755/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-15",
+        "servico": "HEMODINAMICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "1º TA (67430405)",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_dsjmz8",
+    "nome": "NOVECATE",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ncajsk",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "748/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-14",
+        "servico": "HEMODINAMICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "1º TA (67444348)",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_6s2gr7",
+    "nome": "NEUROCORDIS",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_3gnvc0",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "770/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-01-24",
+        "servico": "HEMODINAMICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "1º TA (68273235)",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_guiw1r",
+    "nome": "IRB PRIME CARE SERVICOS MEDICOS CLINICOS HOSPITALARES LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_hcdruo",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "609/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-07",
+        "servico": "NEUROCIRURGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_lwrq3j",
+    "nome": "INAO SERVICOS MEDICOS LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_j9uqb3",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "586/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-23",
+        "servico": "NEUROCIRURGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_cp18x0",
+    "nome": "SOL SERVICOS DE OFTALMOLOGIA LTDA (CLINICA SOL)",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_oozrrj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "472/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-27",
+        "servico": "OFTALMOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_4279ae",
+    "nome": "DIAC - INSTITUTO PAULISTA DE MEDICINA DE PORTO VELHO LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_d66mpq",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "388/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-15",
+        "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_cn013u",
+    "nome": "LABORATORIO BIO CHECK UP",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_z3jdci",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "651/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-29",
+        "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_lenqxt",
+    "nome": "CEPAM - L L S VERAS LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_8mdxrv",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "388/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-18",
+        "servico": "DIAGNOSTICO: ANATOMOPATOLOGICO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_88q4no",
+    "nome": "RIMA - RIO MADEIRA AVIACAO LTDA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ioxp5h",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "81/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-02-03",
+        "servico": "TRANSPORTE AEROMEDICO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_cie5qd",
+    "nome": "ASSOCIACAO CASA FAMILIA ROSETTA",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ha99i2",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "348/2021",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-01",
+        "servico": "COMUNIDADES TERAPEUTICAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_lnpdl4",
+    "nome": "HOSPITAL SAMAR S/A",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_lijcpj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_bhcko3",
+    "nome": "ASSISTENCIA MEDICA INTENSIVA - AMI 24H",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_nxww5s",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "40 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_gjmfy8",
+    "nome": "HOSPITAL JOÃO PAULO II",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_16wohk",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "10 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_1fdt03",
+    "nome": "CEMETRON - JBS",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_qreyzz",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "06 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_mnf3jd",
+    "nome": "CEMETRON",
+    "municipio": "PORTO VELHO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_9e646o",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "07 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_uf3tle",
+    "nome": "HOSPITAL DOS ACIDENTADOS",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_weuk43",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "714/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-08-01",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_dm3g27",
+    "nome": "ANGA (TC)",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_9tm6n6",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "615/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-30",
+        "servico": "DIAGNOSTICO: TC ",
+        "ativo": true,
+        "bloqueado": true,
+        "motivoBloqueio": "Excedente do limite financeiro",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_0lpnka",
+    "nome": "ANGA (RM)",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_qbk82n",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "615/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-30",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_025mp8",
+    "nome": "NOVA IMAGEM DIAGNOSTICO",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_7urx1t",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "647/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-18",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_paqxyx",
+    "nome": "CARDIO CENTER",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_l8d7pm",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "990/2022",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-28",
+        "servico": "HEMODINAMICA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_0t2db8",
+    "nome": "NEGREIROS & VENTORIN SERVICOS MEDICOS LTDA",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_zymih4",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "473/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-28",
+        "servico": "OFTALMOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_4hi5nl",
+    "nome": "HOSPITAL SAMAR S/A - CACOAL",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_b6fpe0",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "458/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-17",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_s431pl",
+    "nome": "HOSPITAL REGIONAL DE CACOAL - HRC",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_unusln",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "26 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_sgddx6",
+    "nome": "HEURO",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_r35os1",
+        "tipo": "REDE PROPRIA",
+        "natureza": "REDE PROPRIA",
+        "numero": "REDE PROPRIA",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "10 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_6vjeoh",
+    "nome": "COMUNIDADE TERAPEUTICA ABISAI",
+    "municipio": "CACOAL",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_te63s6",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "347/2021",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-01",
+        "servico": "COMUNIDADES TERAPEUTICAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_6ds38i",
+    "nome": "HOSPITAL CANDIDO RONDON",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_26muqe",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1206/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-11-07",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_caa7e1",
+    "nome": "HOSPITAL CANDIDO RONDON (SSY HOLDING LTDA)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_vql4wa",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "61/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-01-23",
+        "servico": "CIRURGIA CARDIACA NEO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      },
+      {
+        "id": "i_1780930308758_bi6wez",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "61/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-01-23",
+        "servico": "CIRURGIA CARDIACA PED",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      },
+      {
+        "id": "i_1780930308758_maru2m",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "61/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-01-23",
+        "servico": "CIRURGIA CARDIACA ADULTO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_f1u6y6",
+    "nome": "HOSPITAL SAMAR S/A - JI PARANA (Cirurgias)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_6n5ojy",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "64/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-01-22",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_m5ktev",
+    "nome": "FUNDACAO PIO XII(TC)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_evpnu6",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "775/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-30",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Contraste e Sedação",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_i4djac",
+    "nome": "FUNDACAO PIO XII(RM)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_mi7y6h",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "775/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-30",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Contraste e Sedação",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_ahr9nt",
+    "nome": "INSTITUTO OFTALMOLOGICO DO BRASIL LTDA (SANTA CASA DE JI PARANA)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_4fohee",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "513/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-05",
+        "servico": "OFTALMOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_3mcal0",
+    "nome": "SOL SERVICOS DE OFTALMOLOGIA (SOL OFTALMOLOGIA)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_o9nqsb",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "556/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-16",
+        "servico": "OFTALMOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_6yf45d",
+    "nome": "HOSPITAL MUNICIPAL DE JI PARANA",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_aqlg9f",
+        "tipo": "PACTUACAO",
+        "natureza": "PACTUACAO",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "10 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_vdgawq",
+    "nome": "HOSPITAL SAMAR S/A - JI PARANA",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_xdi92x",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "537/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-17",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "20 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_uvjo5t",
+    "nome": "HOSPITAL CANDIDO RONDON(UTI)",
+    "municipio": "JI-PARANÁ",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_wpnwlj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "540/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-04",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "15 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_aza4w4",
+    "nome": "IMEDI",
+    "municipio": "ARIQUEMES",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_dhmbu8",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "768/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-09-04",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_dajlkb",
+    "nome": "MEDICOS DOS OLHOS (NEGREIROS & VENTORIN SERVICOS MEDICOS LTDA)",
+    "municipio": "ARIQUEMES",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_owm6y4",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "469/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-28",
+        "servico": "OFTALMOLOGIA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_v5f2nc",
+    "nome": "HOSPITAL MONTE SINAI(Cirurgias)",
+    "municipio": "ARIQUEMES",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_l5h3gr",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "209/2026",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-03-07",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_z4prt6",
+    "nome": "HOSPITAL MONTE SINAI",
+    "municipio": "ARIQUEMES",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_1g880u",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "459/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-16",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_cbbljm",
+    "nome": "HOSPITAL BOM JESUS LTDA",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_k9a4z0",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1485/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-24",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_evlrg0",
+    "nome": "C D I CLINICA DE RADIOLOGIA E DIAGNOSTICO POR IMAGEM (TC)",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_hp4it2",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "554/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-18",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_7u9htj",
+    "nome": "C D I CLINICA DE RADIOLOGIA E DIAGNOSTICO POR IMAGEM (RM)",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_se83x2",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "677/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-25",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Contraste e Sedação",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_2agmbm",
+    "nome": "HOSPITAL REGIONAL DE VILHENA",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_yzwani",
+        "tipo": "CONTRATO DE GESTAO",
+        "natureza": "CONTRATO DE GESTAO",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "17 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_8ygu4m",
+    "nome": "ICAMO",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ga6brr",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1360/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-03",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": true,
+        "motivoBloqueio": "Excedente do limite financeiro",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_lxl6xk",
+    "nome": "ASSOCIACAO TRINDADE SANTA DE VILHENA",
+    "municipio": "VILHENA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_4vifb4",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "346/2021",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-01",
+        "servico": "COMUNIDADES TERAPEUTICAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_90zatt",
+    "nome": "MULTIMAGEM(RM)",
+    "municipio": "ROLIM DE MOURA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_y7yob5",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "789/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-14",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_5i5g5q",
+    "nome": "MULTIMAGEM(TC)",
+    "municipio": "ROLIM DE MOURA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_xepdvg",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "789/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-12-14",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_s8aeqn",
+    "nome": "COMUNIDADE TERAPEUTICA NOVA ALIANCA - CERNA",
+    "municipio": "ROLIM DE MOURA",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_tvjtr2",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "349/2021",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-06-01",
+        "servico": "COMUNIDADES TERAPEUTICAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_yilwql",
+    "nome": "MEGA IMAGEM",
+    "municipio": "CEREJEIRAS",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_wlr49h",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "613/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-21",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": true,
+        "motivoBloqueio": "Excedente do limite financeiro",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_w8fq8j",
+    "nome": "CLIMEDI LTDA",
+    "municipio": "CEREJEIRAS",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_knc8h1",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "648/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-07-16",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308758_0gtphg",
+    "nome": "HOSPITAL REGIONAL DE GUAJARA MIRIM",
+    "municipio": "GUAJARA-MIRIM",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308758_ne8kd7",
+        "tipo": "CONTRATO DE GESTAO",
+        "natureza": "CONTRATO DE GESTAO",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "CIRURGIAS",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_mg5pyd",
+    "nome": "HOSPITAL REGIONAL DE GUAJARA MIRIM (UTI)",
+    "municipio": "GUAJARA-MIRIM",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_t8npoy",
+        "tipo": "CONTRATO DE GESTAO",
+        "natureza": "CONTRATO DE GESTAO",
+        "numero": "NAO INFORMADO",
+        "vigenciaInicio": "",
+        "vigenciaFim": "",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "10 leitos",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_ecw3zx",
+    "nome": "CLINI MEDI",
+    "municipio": "GUAJARA-MIRIM",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_bu56pd",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "800/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-08-25",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_omr84a",
+    "nome": "GASTROIMAGEM(TC)",
+    "municipio": "JARU",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_o3ukf7",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "585/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-27",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_c7swjb",
+    "nome": "GASTROIMAGEM(RM)",
+    "municipio": "JARU",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_alv7j1",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "585/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-27",
+        "servico": "DIAGNOSTICO: RM",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_tvlcky",
+    "nome": "HOSPITAL SAO LUCAS DE OURO PRETO LTDA",
+    "municipio": "OURO PRETO DO OESTE",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_z64wmj",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "577/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-06-25",
+        "servico": "DIAGNOSTICO: TC",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "Convencional e Contraste",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_8szx6e",
+    "nome": "HOSPITAL SAO LUCAS DE OURO PRETO",
+    "municipio": "OURO PRETO DO OESTE",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_0x00e0",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "387/2023",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2027-05-26",
+        "servico": "TERAPIA INTENSIVA",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  },
+  {
+    "id": "p_1780930308759_9wqfch",
+    "nome": "R D SERVICOS MEDICOS LTDA",
+    "municipio": "PIMENTA BUENO",
+    "cnpj": "",
+    "ativo": true,
+    "observacaoGeral": "",
+    "instrumentos": [
+      {
+        "id": "i_1780930308759_b3nje9",
+        "tipo": "CONTRATO",
+        "natureza": "CONTRATUALIZADA",
+        "numero": "1177/2025",
+        "vigenciaInicio": "",
+        "vigenciaFim": "2026-10-15",
+        "servico": "DIAGNOSTICO: ELETROENCEFALO E ELETRONEURO",
+        "ativo": true,
+        "bloqueado": false,
+        "motivoBloqueio": "",
+        "observacao": "",
+        "procedimentos": []
+      }
+    ]
+  }
+]
