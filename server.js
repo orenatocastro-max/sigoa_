@@ -85,7 +85,7 @@ function bootstrap(){
     });
     write('prestadores.json', prestadores);
   }
-  ['ofertas.json','auditoria.json','competencias.json','escalas.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
+  ['ofertas.json','auditoria.json','competencias.json','escalas.json','tetos.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
   syncAuxiliares();
 }
 function normNatureza(n){ n=String(n||'').toUpperCase(); if(n.includes('PROPRIA')) return 'REDE PROPRIA'; if(n.includes('PACT')) return 'PACTUACAO'; if(n.includes('CONVEN')) return 'CONVENIO'; if(n.includes('GESTAO')) return 'CONTRATO DE GESTAO'; return n||'CONTRATUALIZADA'; }
@@ -137,6 +137,41 @@ function filtrarPrestadoresPorUsuario(req, ps){ if(!isOperadorSession(req)) retu
 function exigirPrestadorPermitido(req,res,prestadorId){ if(prestadorPermitido(req,prestadorId)) return true; res.status(403).json({erro:'Operador não vinculado a este prestador'}); return false; }
 function marcarEscalaLancada(req, mes, prestador, instrumento){ if(!mes || !prestador) return; const escalas=read('escalas.json',[]); const iid=instrumento?.id||''; let e=escalas.find(x=>x.mes===mes && x.prestadorId===prestador.id && (x.instrumentoId||'')===iid); if(!e){ e={id:uid('esc'), mes, prestadorId:prestador.id, instrumentoId:iid}; escalas.push(e); } e.prestador=prestador.nome; e.municipio=prestador.municipio; e.servico=instrumento?.servico||''; e.instrumento=instrumento?.numero||instrumento?.tipo||''; e.status='LANÇADA'; e.operadorId=req.session.user?.id||''; e.operador=req.session.user?.nome||req.session.user?.login||''; e.login=req.session.user?.login||''; e.lancadaEm=now(); write('escalas.json',escalas); }
 
+function mesDentro(mes, inicio, fim){
+  mes = String(mes || new Date().toISOString().slice(0,7)).slice(0,7);
+  inicio = String(inicio || '0000-00').slice(0,7);
+  fim = String(fim || '9999-99').slice(0,7);
+  return mes >= inicio && mes <= fim;
+}
+function tetosAtivos(mes){
+  return read('tetos.json',[]).filter(t => t.ativo !== false && mesDentro(mes, t.inicio, t.fim));
+}
+function tetoServico(tetos, prestadorId, instrumentoId){
+  return tetos.find(t => t.modalidade === 'SERVICO' && t.prestadorId === prestadorId && t.instrumentoId === instrumentoId) || null;
+}
+function tetoProcedimento(tetos, prestadorId, instrumentoId, codigo){
+  return tetos.find(t => t.modalidade === 'PROCEDIMENTO' && t.prestadorId === prestadorId && t.instrumentoId === instrumentoId && onlyDigits(t.codigo) === onlyDigits(codigo)) || null;
+}
+function resumoTetosPorMes(mes){
+  const ps=read('prestadores.json',[]), ofs=read('ofertas.json',[]).filter(o=>o.mes===mes), tetos=tetosAtivos(mes);
+  const rows=[];
+  ps.forEach(p => (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{
+    const teto = tetoServico(tetos, p.id, i.id);
+    const total = ofs.filter(o=>o.prestadorId===p.id && o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0);
+    if(teto || total>0){
+      rows.push({
+        mes, prestadorId:p.id, instrumentoId:i.id, prestador:p.nome, municipio:p.municipio, servico:i.servico||'-',
+        tetoMensal:teto?Number(teto.quantidade||0):null, lancado:total,
+        diferenca:teto? total-Number(teto.quantidade||0):null,
+        percentual:teto && Number(teto.quantidade||0)>0 ? Math.round((total/Number(teto.quantidade||0))*10000)/100 : null,
+        observacao:teto?.observacao||'', tetoId:teto?.id||''
+      });
+    }
+  }));
+  return rows;
+}
+
+
 bootstrap();
 
 app.get('/',(req,res)=>res.redirect('/sigoa/'));
@@ -177,6 +212,41 @@ app.post('/api/ofertas/lote',canWrite,(req,res)=>{ const {mes,prestadorId,instru
       }
   }); write('ofertas.json',ofs); marcarEscalaLancada(req, mes, p, i); audit(req,'ESCALA_LANÇADA','instrumento',instrumentoId,[{campo:'prestador',novo:p.nome},{campo:'mes',novo:mes},{campo:'total_prestador_mes',novo:ofs.filter(x=>x.mes===mes&&x.prestadorId===prestadorId).reduce((sum,x)=>sum+Number(x.quantidade||0),0)}]); res.json({ok:true, totalPrestadorMes: ofs.filter(x=>x.mes===mes&&x.prestadorId===prestadorId).reduce((sum,x)=>sum+Number(x.quantidade||0),0)}); });
 app.get('/api/ofertas',auth,(req,res)=>{ const {mes}=req.query; let a=read('ofertas.json',[]); if(isOperadorSession(req)){ const ids=new Set(operadorPrestadores(req)); a=a.filter(x=>ids.has(x.prestadorId)); } if(mes)a=a.filter(x=>x.mes===mes); res.json(a); });
+
+app.get('/api/tetos',auth,(req,res)=>{
+  const {mes}=req.query;
+  let tetos=read('tetos.json',[]);
+  if(mes) tetos=tetos.filter(t=>mesDentro(String(mes).slice(0,7),t.inicio,t.fim));
+  if(isOperadorSession(req)){ const ids=new Set(operadorPrestadores(req)); tetos=tetos.filter(t=>ids.has(t.prestadorId)); }
+  res.json(tetos);
+});
+app.get('/api/tetos/resumo',auth,(req,res)=>{
+  const mes=String(req.query.mes||new Date().toISOString().slice(0,7)).slice(0,7);
+  let rows=resumoTetosPorMes(mes);
+  if(isOperadorSession(req)){ const ids=new Set(operadorPrestadores(req)); rows=rows.filter(r=>ids.has(r.prestadorId)); }
+  res.json(rows);
+});
+app.post('/api/tetos',roles('ADMINISTRADOR'),(req,res)=>{
+  const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,req.body.prestadorId,req.body.instrumentoId);
+  if(!p || !i) return res.status(404).json({erro:'Prestador/serviço não encontrado'});
+  const modalidade=String(req.body.modalidade||'SERVICO').toUpperCase()==='PROCEDIMENTO'?'PROCEDIMENTO':'SERVICO';
+  const quantidade=Number(req.body.quantidade||0);
+  if(quantidade<0) return res.status(400).json({erro:'Informe um teto mensal válido'});
+  if(modalidade==='PROCEDIMENTO' && !req.body.codigo) return res.status(400).json({erro:'Informe o procedimento'});
+  const tetos=read('tetos.json',[]);
+  const t={id:uid('teto'), modalidade, prestadorId:p.id, instrumentoId:i.id, prestador:p.nome, municipio:p.municipio, servico:i.servico||'', codigo:req.body.codigo||'', procedimento:req.body.procedimento||'', quantidade, inicio:String(req.body.inicio||new Date().toISOString().slice(0,7)).slice(0,7), fim:String(req.body.fim||'').slice(0,7), observacao:req.body.observacao||'', ativo:req.body.ativo!==false, criadoPor:req.session.user.login, criadoEm:now(), alteradoPor:'', alteradoEm:''};
+  tetos.push(t); write('tetos.json',tetos); audit(req,'CRIAR_TETO','teto',t.id,[{campo:'prestador',novo:p.nome},{campo:'servico',novo:i.servico},{campo:'modalidade',novo:modalidade},{campo:'quantidade',novo:quantidade}]); res.json(t);
+});
+app.put('/api/tetos/:id',roles('ADMINISTRADOR'),(req,res)=>{
+  const tetos=read('tetos.json',[]); const t=tetos.find(x=>x.id===req.params.id); if(!t) return res.status(404).json({erro:'Teto não encontrado'});
+  const old={...t}; ['modalidade','prestadorId','instrumentoId','codigo','procedimento','inicio','fim','observacao','ativo'].forEach(c=>{ if(req.body[c]!==undefined)t[c]=req.body[c]; });
+  if(req.body.quantidade!==undefined)t.quantidade=Number(req.body.quantidade||0);
+  const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,t.prestadorId,t.instrumentoId);
+  if(p){ t.prestador=p.nome; t.municipio=p.municipio; }
+  if(i){ t.servico=i.servico||''; }
+  t.alteradoPor=req.session.user.login; t.alteradoEm=now(); write('tetos.json',tetos); audit(req,'ALTERAR_TETO','teto',t.id,diff(old,t,['modalidade','prestadorId','instrumentoId','codigo','procedimento','quantidade','inicio','fim','observacao','ativo'])); res.json(t);
+});
+
 
 app.get('/api/escalas',auth,(req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=filtrarPrestadoresPorUsuario(req, read('prestadores.json',[])); const escalas=read('escalas.json',[]).filter(e=>e.mes===mes); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const usuarios=read('usuarios.json',[]); const rows=[]; ps.forEach(p=>{ (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{ const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id); const total=ofs.filter(o=>o.prestadorId===p.id && o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0); const operadorNome=esc?.operador || usuarios.filter(u=>(u.prestadoresVinculados||[]).includes(p.id)).map(u=>u.nome).join(', '); rows.push({mes, prestadorId:p.id, instrumentoId:i.id, prestador:p.nome, servico:i.servico||'-', instrumento:i.numero||i.tipo||'-', municipio:p.municipio, status: esc?'LANÇADA':'PENDENTE', operador:operadorNome||'', lancadaEm:esc?.lancadaEm||'', totalOfertaMes:total}); }); }); res.json(rows); });
 
@@ -221,7 +291,7 @@ app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{ return 
   res.json({ok:true});
 });
 
-app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
+app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const tetos=tetosAtivos(mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const teto=tetoServico(tetos,p.id,i.id); const lancado=ofs.filter(o=>o.prestadorId===p.id&&o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0); const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', tetoMensal:teto?Number(teto.quantidade||0):null, tetoObservacao:teto?.observacao||'', lancadoMensal:lancado, procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const tq=tetoProcedimento(tetos,p.id,i.id,pr.codigo); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', tetoMensal:tq?Number(tq.quantidade||0):null, tetoObservacao:tq?.observacao||'', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
 
 async function start(){
   try{
