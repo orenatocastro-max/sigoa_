@@ -29,7 +29,7 @@ async function apiPost(url, body){
   return j;
 }
 function getMes(){ return DATA?.competencia || monthNow(); }
-function flat(){ return Object.entries(DATA?.municipios||{}).flatMap(([municipio, itens]) => (itens||[]).map(row => ({...row, municipio}))); }
+function flat(){ return Object.entries(DATA?.municipios||{}).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'pt-BR')).flatMap(([municipio, itens]) => (itens||[]).map(row => ({...row, municipio})).sort((a,b)=>String(a.prestador||'').localeCompare(String(b.prestador||''),'pt-BR') || String(a.servico||'').localeCompare(String(b.servico||''),'pt-BR'))); }
 function procFlat(){ return flat().flatMap(row => (row.procedimentos||[]).map(p => ({...p, municipio:row.municipio, prestador:row.prestador, servico:row.servico, natureza:row.natureza, contrato_fim:row.contrato_fim, numero_contrato:row.numero_contrato, bloqueado:row.bloqueado, motivo_bloqueio:row.motivo_bloqueio, observacao:row.observacao}))); }
 function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')); }
 function rowsByServico(s){ return flat().filter(r => norm(r.servico) === norm(s)); }
@@ -60,6 +60,24 @@ function macroMunicipios(nome){ return (MACRORREGIOES[nome]||[]).filter(m => mun
 function rowsByMacro(nome){ const ms=macroMunicipios(nome); return flat().filter(r => ms.some(m=>norm(m)===norm(r.municipio))); }
 function macroResumo(nome){ const rows=rowsByMacro(nome); return {macro:nome, municipios:macroMunicipios(nome), rows, prestadores:uniq(rows.map(r=>r.prestador)).length, servicos:uniq(rows.map(r=>r.servico)).length, bloqueados:rows.filter(r=>r.bloqueado||r.motivo_bloqueio).length, oferta:rows.flatMap(r=>r.procedimentos||[]).reduce((s,p)=>s+(p.oferta==='-'?0:Number(p.oferta||0)),0)}; }
 
+
+
+function bindEvents(){
+  if(window.__redeExecutoraBindEvents) return;
+  window.__redeExecutoraBindEvents = true;
+  window.addEventListener('message', (event) => {
+    const data = event.data || {};
+    if(data.type === 'RO_MUNICIPIO_CLICK' && data.municipio){
+      const rows = rowsByMunicipio(data.municipio).sort((a,b)=>String(a.prestador||'').localeCompare(String(b.prestador||''),'pt-BR') || String(a.servico||'').localeCompare(String(b.servico||''),'pt-BR'));
+      selectRows({
+        title: data.municipio,
+        subtitle: 'Prestadores, tipos de serviço e tetos mensais consolidados.',
+        rows,
+        sourcePanel: 'municipios'
+      });
+    }
+  });
+}
 
 function render(){
   app.innerHTML = `<div class="proShell">
