@@ -60,6 +60,61 @@ function macroMunicipios(nome){ return (MACRORREGIOES[nome]||[]).filter(m => mun
 function rowsByMacro(nome){ const ms=macroMunicipios(nome); return flat().filter(r => ms.some(m=>norm(m)===norm(r.municipio))); }
 function macroResumo(nome){ const rows=rowsByMacro(nome); return {macro:nome, municipios:macroMunicipios(nome), rows, prestadores:uniq(rows.map(r=>r.prestador)).length, servicos:uniq(rows.map(r=>r.servico)).length, bloqueados:rows.filter(r=>r.bloqueado||r.motivo_bloqueio).length, oferta:rows.flatMap(r=>r.procedimentos||[]).reduce((s,p)=>s+(p.oferta==='-'?0:Number(p.oferta||0)),0)}; }
 
+function enc(v){ return encodeURIComponent(String(v ?? '')); }
+function dec(v){ try { return decodeURIComponent(String(v ?? '')); } catch(e){ return String(v ?? ''); } }
+
+function drawerHtml(kind){
+  const titles = {
+    servicos:'Serviços',
+    municipios:'Municípios',
+    panorama:'Panorama da Rede',
+    relatorios:'Relatórios',
+    procedimentos:'Procedimentos',
+    vigencias:'Vigências',
+    bloqueios:'Bloqueios'
+  };
+  const subtitles = {
+    servicos:'Consulta por tipo de serviço',
+    municipios:'Consulta por localidade',
+    panorama:'Macro 1 e Macro 2',
+    relatorios:'Relatórios de consulta',
+    procedimentos:'Busca de procedimentos',
+    vigencias:'Contratos e vigências',
+    bloqueios:'Prestadores bloqueados'
+  };
+  let body = '';
+  if(kind === 'servicos'){
+    const items = servicos().filter(match);
+    body = drawerList('Buscar serviço', items, s => ({title:s, subtitle:'Prestador, tipo de serviço e teto mensal consolidado.', rows:rowsByServico(s), sourcePanel:'servicos'}));
+  } else if(kind === 'municipios'){
+    const items = municipios().filter(match);
+    body = drawerList('Buscar município', items, m => ({title:m, subtitle:'Prestadores, tipos de serviço e tetos mensais consolidados.', rows:rowsByMunicipio(m), sourcePanel:'municipios'}));
+  } else if(kind === 'panorama'){
+    body = panoramaDrawer();
+  } else if(kind === 'relatorios'){
+    body = relatoriosDrawer();
+  } else if(kind === 'procedimentos'){
+    body = procedimentosDrawer();
+  } else if(kind === 'vigencias'){
+    body = vigenciasDrawer();
+  } else if(kind === 'bloqueios'){
+    body = bloqueiosDrawer();
+  } else {
+    body = '<div class="drawerBody"><div class="drawerNote">Consulta não encontrada.</div></div>';
+  }
+  return `<div class="drawerBackdrop drawerOpen" onclick="closePanel(event)">
+    <aside class="drawer" onclick="event.stopPropagation()">
+      <div class="drawerHeader"><div><div class="drawerNavRow">${panelHistory.length?'<button class="backButton" onclick="backPanel()">← Voltar</button>':''}</div><span class="eyebrow">${esc(subtitles[kind]||'Consulta')}</span><h2>${esc(titles[kind]||'Consulta')}</h2></div><button class="iconButton" onclick="closePanel()">×</button></div>
+      ${body}
+    </aside>
+  </div>`;
+}
+
+function rowResumoTexto(r){
+  return `${r.prestador} • ${r.servico || '-'} • Teto mensal: ${tetoLabel(r)}`;
+}
+
+
 
 
 function bindEvents(){
@@ -130,8 +185,8 @@ function relatoriosDrawer(){
     <button class="drawerOption macroServiceCard" onclick="openGroupedReport('Panorama por macrorregião','Resumo dividido em Macro 1 e Macro 2.', reportByMacro())"><strong>Panorama por macrorregião</strong><span>Macro 1 e Macro 2</span></button>
   </div>`;
 }
-function reportByMunicipio(){ return municipios().map(m => ({titulo:m, linhas:rowsByMunicipio(m).map(r=>`${r.prestador} • ${r.servico} • ${naturezaLabel(r.natureza)}${r.contrato_fim?' • Vigência: '+brDate(r.contrato_fim):''}`)})); }
-function reportByServico(){ return servicos().map(s => ({titulo:s, linhas:rowsByServico(s).map(r=>`${r.prestador} • ${r.municipio} • ${naturezaLabel(r.natureza)}${r.observacao?' • '+r.observacao:''}`)})); }
+function reportByMunicipio(){ return municipios().map(m => ({titulo:m, linhas:rowsByMunicipio(m).map(rowResumoTexto)})); }
+function reportByServico(){ return servicos().map(s => ({titulo:s, linhas:rowsByServico(s).map(rowResumoTexto)})); }
 function reportProcedimentosPrestador(){ return prestadores().map(p => { const d=providerDetail(p); return {titulo:p, subtitulo:d.municipio, linhas:d.procedimentos.length?d.procedimentos:['Nenhum procedimento cadastrado.']}; }); }
 function reportResumoProcedimentos(){
   const mapa = new Map();
@@ -162,7 +217,7 @@ function reportResumoProcedimentos(){
   }));
 }
 function reportByNatureza(){ const rows=flat(); const naturezas=uniq(rows.map(r=>naturezaLabel(r.natureza))); return naturezas.map(n => ({titulo:n, linhas:rows.filter(r=>naturezaLabel(r.natureza)===n).map(r=>`${r.prestador} • ${r.municipio} • ${r.servico}`)})); }
-function reportByMacro(){ return ['Macro 1','Macro 2'].map(m=>{ const resumo=macroResumo(m); return {titulo:m, subtitulo:`${resumo.municipios.length} município(s) • ${resumo.prestadores} prestador(es) • ${resumo.servicos} serviço(s)`, linhas:resumo.rows.map(r=>`${r.municipio} • ${r.prestador} • ${r.servico} • ${naturezaLabel(r.natureza)}`)}; }); }
+function reportByMacro(){ return ['Macro 1','Macro 2'].map(m=>{ const resumo=macroResumo(m); return {titulo:m, subtitulo:`${resumo.municipios.length} município(s) • ${resumo.prestadores} prestador(es) • ${resumo.servicos} serviço(s)`, linhas:resumo.rows.map(rowResumoTexto)}; }); }
 function openGroupedReport(title, subtitle, grupos){
   const html = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:Arial,sans-serif;color:#0b3354;background:#f3f7fb;margin:0}.page{max-width:1040px;margin:0 auto;padding:22px}.cover{background:linear-gradient(135deg,#0b3354,#1d6b91);color:#fff;border-radius:18px;padding:24px;margin-bottom:16px}.card{background:#fff;border:1px solid #d9e6ef;border-radius:16px;padding:14px;margin:0 0 12px;break-inside:avoid}h1{margin:4px 0 8px}h2{font-size:17px;margin:0 0 4px}.muted{color:#587086}li{margin:5px 0}@media print{body{background:#fff}.page{padding:0}}</style></head><body><div class="page"><section class="cover"><b>REDE EXECUTORA • CREG/RO</b><h1>${esc(title)}</h1><p>${esc(subtitle)} • Competência ${esc(competenciaLabel(DATA?.competencia||monthNow()))} • Emitido em ${new Date().toLocaleString('pt-BR')}</p></section>${grupos.map(g=>`<section class="card"><h2>${esc(g.titulo)}</h2>${g.subtitulo?`<p class="muted">${esc(g.subtitulo)}</p>`:''}<ol>${(g.linhas||[]).map(l=>`<li>${esc(l)}</li>`).join('')}</ol></section>`).join('')}</div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`;
   const w=window.open('','_blank'); w.document.open(); w.document.write(html); w.document.close();
@@ -189,5 +244,12 @@ function closeProvider(ev){ if(ev?.target && ev.target.closest && ev.target.clos
 function printSelection(){ if(selection) openPrint(selection.title, selection.subtitle, selection.rows); }
 function printProvider(nome){ const d=providerDetail(dec(nome)); openPrint(`Rol de procedimentos • ${d.nome}`, `Relatório individual do prestador ${d.nome}.`, d.rede); }
 function openPrint(title, subtitle, rows){ const html = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:Arial,sans-serif;color:#0b3354;background:#f3f7fb;margin:0}.page{max-width:980px;margin:0 auto;padding:22px}.cover{background:linear-gradient(135deg,#0b3354,#1d6b91);color:#fff;border-radius:18px;padding:26px;margin-bottom:18px}.card{background:#fff;border:1px solid #d9e6ef;border-radius:16px;padding:16px;margin:0 0 10px;break-inside:avoid}h1{margin:12px 0 6px}.grid{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:8px}.head{font-weight:bold;color:#587086}</style></head><body><div class="page"><section class="cover"><b>REDE EXECUTORA • CREG/RO</b><h1>${esc(title)}</h1><p>${esc(subtitle)} • Competência ${esc(competenciaLabel(DATA?.competencia||monthNow()))} • Emitido em ${new Date().toLocaleString('pt-BR')}</p></section><section class="card"><div class="grid head"><div>Prestador</div><div>Tipo de serviço</div><div>Teto mensal</div></div>${rows.map(r=>`<div class="grid"><div>${esc(r.prestador)}</div><div>${esc(r.servico||'-')}</div><div>${esc(tetoLabel(r))}</div></div>`).join('')}</section></div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`; const w=window.open('','_blank'); w.document.open(); w.document.write(html); w.document.close(); }
+
+
+Object.assign(window, {
+  openPanel, closePanel, backPanel, selectRows, backToPanel, closeSelection,
+  openProvider, closeProvider, printSelection, printProvider, downloadSelectionCSV,
+  openGroupedReport
+});
 
 reload();

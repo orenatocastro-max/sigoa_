@@ -2,6 +2,8 @@ let ME=null, PRESTADORES=[], SIGTAP=[], AUX={}, TETOS=[];
 const $=s=>document.querySelector(s); const app=$('#app');
 async function api(url,opt={}){const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opt}); if(!r.ok){let e=await r.json().catch(()=>({erro:r.statusText})); throw new Error(e.erro||'Erro')} return r.headers.get('content-type')?.includes('json')?r.json():r.text()}
 function fmt(d){return d?String(d).split('-').reverse().join('/'):''}
+function mesLabel(v){const [y,m]=String(v||'').slice(0,7).split('-');const nomes=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return y&&m?`${nomes[Number(m)-1]||m} de ${y}`:String(v||'')}
+function cell(v){if(v===null||v===undefined)return '';if(typeof v==='string'&&/^\d{4}-\d{2}$/.test(v))return mesLabel(v);if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(v)){try{return new Date(v).toLocaleString('pt-BR')}catch(e){return v}}if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v))return fmt(v);return v}
 function canWrite(){return ['ADMINISTRADOR','OPERADOR'].includes(ME?.perfil)}
 function isAdmin(){return ME?.perfil==='ADMINISTRADOR'}
 function canAudit(){return ['ADMINISTRADOR','AUDITOR','CONSULTA'].includes(ME?.perfil)}
@@ -151,7 +153,7 @@ async function relatorios(){main(`<h1>Relatórios</h1><div class="card"><div cla
 function relActions(){return `<div class="row"><button onclick="printRelatorio()">Imprimir</button><button onclick="csvRelatorio()">Exportar CSV</button></div>`}
 function setRel(titulo,html,linhas=[]){REL_ATUAL={titulo,linhas};$('#rel').innerHTML=`<div class="card"><h2>${titulo}</h2>${relActions()}</div>${html}`}
 function objRows(obj,cols=['Item','Total']){return Object.entries(obj||{}).sort((a,b)=>Number(b[1])-Number(a[1])||String(a[0]).localeCompare(String(b[0]),'pt-BR')).map(([k,v])=>({[cols[0]]:k,[cols[1]]:v}))}
-function tableRows(rows){if(!rows.length)return '<p class="muted">Nenhum registro encontrado.</p>';const cols=Object.keys(rows[0]);return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]??''}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+function tableRows(rows){if(!rows.length)return '<p class="muted">Nenhum registro encontrado.</p>';const cols=Object.keys(rows[0]);return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${cell(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
 async function gerarRelatorio(){const p=periodo();const r=await api(`/api/relatorios/resumo?inicio=${p.inicio}&fim=${p.fim}`); const cards=`<div class="grid"><div class="card"><b>Total ofertado</b><h2>${r.total}</h2></div><div class="card"><b>Procedimentos</b><h2>${Object.keys(r.porProcedimento||{}).length}</h2></div><div class="card"><b>Prestadores</b><h2>${Object.keys(r.porPrestador||{}).length}</h2></div><div class="card"><b>Municípios</b><h2>${Object.keys(r.porMunicipio||{}).length}</h2></div></div>`; const linhas=[...objRows(r.porProcedimento,['Procedimento','Total'])]; setRel('Resumo geral do período',cards+`<div class="grid2"><div class="card"><h3>Por procedimento</h3>${tableRows(objRows(r.porProcedimento,['Procedimento','Total']))}</div><div class="card"><h3>Por prestador</h3>${tableRows(objRows(r.porPrestador,['Prestador','Total']))}</div><div class="card"><h3>Por município</h3>${tableRows(objRows(r.porMunicipio,['Município','Total']))}</div><div class="card"><h3>Por serviço</h3>${tableRows(objRows(r.porServico,['Serviço','Total']))}</div></div>`,linhas)}
 async function relResumoProcedimentos(){const p=periodo(),r=await api(`/api/relatorios/resumo?inicio=${p.inicio}&fim=${p.fim}`);const rows=objRows(r.porProcedimento,['Procedimento','Total ofertado']);setRel('Resumo por procedimentos',`<div class="card"><p>Soma o quantitativo lançado por todos os prestadores em cada procedimento.</p>${tableRows(rows)}</div>`,rows)}
 async function relPrestadores(){const p=periodo(),r=await api(`/api/relatorios/resumo?inicio=${p.inicio}&fim=${p.fim}`);const rows=objRows(r.porPrestador,['Prestador','Total ofertado']);setRel('Resumo por prestadores',`<div class="card">${tableRows(rows)}</div>`,rows)}
@@ -161,13 +163,13 @@ async function relProducaoOperadores(){const p=periodo();const dados=await api(`
 async function relAuditoriaDetalhada(){const logs=await api('/api/auditoria');const p=periodo();const rows=(logs||[]).filter(l=>(!p.inicioDia||l.dataHora>=p.inicioDia)&&(!p.fimDia||l.dataHora<=p.fimDia+'T23:59:59')).map(l=>({Data:new Date(l.dataHora).toLocaleString('pt-BR'),Usuário:l.nome||l.usuario,Perfil:l.perfil,Ação:l.acao,Entidade:l.entidade||'',Detalhes:(l.detalhes||[]).map(d=>`${d.campo}: ${d.anterior??''} → ${d.novo??''}`).join(' | ')}));setRel('Auditoria detalhada',`<div class="card">${tableRows(rows)}</div>`,rows)}
 async function relBloqueios(){await load();const rows=[];PRESTADORES.forEach(p=>(p.instrumentos||[]).forEach(i=>{if(p.bloqueado||i.bloqueado||p.motivoBloqueio||i.motivoBloqueio)rows.push({Prestador:p.nome,Município:p.municipio,Serviço:i.servico,Natureza:i.natureza,Motivo:p.motivoBloqueio||i.motivoBloqueio||'Bloqueado'})}));setRel('Bloqueios ativos',`<div class="card">${tableRows(rows)}</div>`,rows)}
 async function relVigencias(){await load();const hoje=new Date();const rows=[];PRESTADORES.forEach(p=>(p.instrumentos||[]).forEach(i=>{if(!i.vigenciaFim)return;const d=new Date(i.vigenciaFim+'T12:00:00');const dias=Math.ceil((d-hoje)/86400000);if(dias<=60)rows.push({Prestador:p.nome,Município:p.municipio,Serviço:i.servico,Contrato:i.numero||'',Vigência:fmt(i.vigenciaFim),Dias:dias,Status:dias<0?'Vencido':'A vencer'})}));rows.sort((a,b)=>a.Dias-b.Dias);setRel('Vigências críticas',`<div class="card"><p>Contratos vencidos ou com vencimento em até 60 dias.</p>${tableRows(rows)}</div>`,rows)}
-async function relSemOferta(){await load();const p=periodo();const ofertas=await api('/api/ofertas?mes='+p.fim).catch(()=>[]);const rows=[];PRESTADORES.forEach(pr=>(pr.instrumentos||[]).forEach(i=>(i.procedimentos||[]).filter(x=>x.ativo!==false).forEach(proc=>{const o=ofertas.find(x=>x.prestadorId===pr.id&&x.instrumentoId===i.id&&String(x.codigo).replace(/\D/g,'')===String(proc.codigo).replace(/\D/g,''));if(!o||Number(o.quantidade||0)<=0)rows.push({Prestador:pr.nome,Município:pr.municipio,Serviço:i.servico,Código:proc.codigo,Procedimento:proc.nome})})));setRel('Procedimentos sem oferta',`<div class="card"><p>Considera a competência final selecionada: ${p.fim}.</p>${tableRows(rows)}</div>`,rows)}
+async function relSemOferta(){await load();const p=periodo();const ofertas=await api('/api/ofertas?mes='+p.fim).catch(()=>[]);const rows=[];PRESTADORES.forEach(pr=>(pr.instrumentos||[]).forEach(i=>(i.procedimentos||[]).filter(x=>x.ativo!==false).forEach(proc=>{const o=ofertas.find(x=>x.prestadorId===pr.id&&x.instrumentoId===i.id&&String(x.codigo).replace(/\D/g,'')===String(proc.codigo).replace(/\D/g,''));if(!o||Number(o.quantidade||0)<=0)rows.push({Prestador:pr.nome,Município:pr.municipio,Serviço:i.servico,Código:proc.codigo,Procedimento:proc.nome})})));setRel('Procedimentos sem oferta',`<div class="card"><p>Considera a competência final selecionada: ${mesLabel(p.fim)}.</p>${tableRows(rows)}</div>`,rows)}
 function macroNome(m){const macro1=['ALTO PARAÍSO','ARIQUEMES','BURITIS','CACAULÂNDIA','CAMPO NOVO DE RONDÔNIA','CANDEIAS DO JAMARI','CUJUBIM','GOVERNADOR JORGE TEIXEIRA','GUAJARÁ-MIRIM','ITAPUÃ DO OESTE','JARU','MACHADINHO DO OESTE','MONTE NEGRO','NOVA MAMORÉ','PORTO VELHO','RIO CRESPO','THEOBROMA','VALE DO ANARI'];return macro1.includes(String(m||'').toUpperCase())?'Macro 1':'Macro 2'}
 async function relPanoramaMacro(){await load();const map={};PRESTADORES.forEach(p=>(p.instrumentos||[]).forEach(i=>{const ma=macroNome(p.municipio);if(!map[ma])map[ma]={Macro:ma,Municípios:new Set(),Prestadores:new Set(),Serviços:0,Procedimentos:0,Bloqueios:0};map[ma].Municípios.add(p.municipio);map[ma].Prestadores.add(p.nome);map[ma].Serviços++;map[ma].Procedimentos+=(i.procedimentos||[]).length;if(p.bloqueado||i.bloqueado)map[ma].Bloqueios++}));const rows=Object.values(map).map(x=>({Macro:x.Macro,Municípios:x.Municípios.size,Prestadores:x.Prestadores.size,Serviços:x.Serviços,Procedimentos:x.Procedimentos,Bloqueios:x.Bloqueios}));setRel('Panorama Macro 1 e Macro 2',`<div class="card">${tableRows(rows)}</div>`,rows)}
 
 async function escalasMes(){const mes=new Date().toISOString().slice(0,7); main(`<h1>Escalas do mês</h1><div class="card"><div class="grid"><div><label>Competência</label><input id="escMes" type="month" value="${mes}"></div><div><label>&nbsp;</label><button onclick="carregarEscalasMes()">Carregar</button></div></div></div><div id="escBox"></div>`); carregarEscalasMes()}
-async function carregarEscalasMes(){const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);const rows=await api('/api/escalas?mes='+mes);const lancadas=rows.filter(x=>x.status==='LANÇADA').length, pendentes=rows.length-lancadas;$('#escBox').innerHTML=`<div class="grid"><div class="card"><b>Lançadas</b><h2>${lancadas}</h2></div><div class="card"><b>Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total de prestadores</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mes}</h3>${tableRows(rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0})))}</div>`}
-async function relEscalasLancadas(){const p=periodo();const rows=await api('/api/escalas?mes='+p.fim);const out=rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0}));setRel('Escalas lançadas e pendentes',`<div class="card"><p>Mostra os prestadores com escala lançada ou pendente na competência final selecionada: ${p.fim}.</p>${tableRows(out)}</div>`,out)}
+async function carregarEscalasMes(){const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);const rows=await api('/api/escalas?mes='+mes);const lancadas=rows.filter(x=>x.status==='LANÇADA').length, pendentes=rows.length-lancadas;$('#escBox').innerHTML=`<div class="grid"><div class="card"><b>Lançadas</b><h2>${lancadas}</h2></div><div class="card"><b>Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total de prestadores</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mesLabel(mes)}</h3>${tableRows(rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0})))}</div>`}
+async function relEscalasLancadas(){const p=periodo();const rows=await api('/api/escalas?mes='+p.fim);const out=rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0}));setRel('Escalas lançadas e pendentes',`<div class="card"><p>Mostra os prestadores com escala lançada ou pendente na competência final selecionada: ${mesLabel(p.fim)}.</p>${tableRows(out)}</div>`,out)}
 
 
 async function relTetosMensais(){const p=periodo();const rows=await api('/api/tetos/resumo?mes='+p.fim);const out=rows.map(r=>({Prestador:r.prestador,Serviço:r.servico,Município:r.municipio,'Teto mensal':r.tetoMensal??'Não definido','Lançado':r.lancado,'Diferença':r.diferenca??'-','% executado':r.percentual??'-',Observação:r.observacao||''}));setRel('Tetos mensais x lançamento',`<div class="card"><p>Compara o teto mensal consolidado por prestador/tipo de serviço com o quantitativo lançado na competência ${p.fim}.</p>${tableRows(out)}</div>`,out)}
@@ -192,107 +194,3 @@ async function resetUser(id){const nova=prompt('Nova senha provisória','123456'
 function perfil(){main(`<h1>Minha senha</h1><div class="card"><label>Senha atual</label><input id="sa" type="password"><label>Nova senha</label><input id="ns" type="password"><button onclick="trocarSenha()">Alterar senha</button></div>`)}
 async function trocarSenha(){await api('/api/minha-senha',{method:'POST',body:JSON.stringify({senhaAtual:$('#sa').value,novaSenha:$('#ns').value})}); alert('Senha alterada')}
 init();
-
-
-/* ===== Integração SIGOA + SIGC v1 ===== */
-function perfilGestao(){ return ME?.perfil==='GESTAO'; }
-function canAudit(){return ['ADMINISTRADOR','AUDITOR','CONSULTA','GESTAO'].includes(ME?.perfil)}
-function shell(){
-  app.innerHTML=`<div class="wrap"><div class="side"><h2>SIGO+SIGC</h2><p class="small">Base única assistencial e contratual</p><p>${ME.nome}<br><b>${ME.perfil}</b></p>
-  <button onclick="dashboard()">Dashboard SIGOA</button>
-  <button onclick="sigcDashboard()">SIGC Contratos</button>
-  <button onclick="prestadores()">Prestadores</button>
-  ${canWrite()?'<button onclick="oferta()">Oferta mensal</button>':''}
-  <button onclick="escalasMes()">Escalas do mês</button>
-  ${canWrite()?'<button onclick="sigtap()">Base SIGTAP</button>':''}
-  ${canAudit()?'<button onclick="relatorios()">Relatórios</button>':''}
-  ${['ADMINISTRADOR','AUDITOR'].includes(ME.perfil)?'<button onclick="auditoria()">Auditoria</button>':''}
-  ${ME.perfil==='ADMINISTRADOR'?'<button onclick="usuarios()">Usuários</button><button onclick="auxiliares()">Cadastros auxiliares</button><button onclick="tetos()">Tetos</button>':''}
-  <button onclick="perfil()">Minha senha</button><button onclick="sair()">Sair</button></div><div class="main" id="main"></div></div>`;
-}
-async function dashboard(){
-  await load();
-  const mes=new Date().toISOString().slice(0,7);
-  const escalas=await api('/api/escalas-detalhadas?mes='+mes).catch(()=>[]);
-  const abertas=escalas.filter(e=>e.status==='LANÇADA').length;
-  const nao=escalas.length-abertas;
-  const lista=escalas.slice(0,80).map(e=>`<tr onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')"><td class="emoji">${e.emoji}</td><td><b>${esc(e.prestador)}</b><br><span class="muted">${esc(e.municipio)}</span></td><td>${esc(e.servico)}</td><td>${(e.subitens||[]).map(s=>`${s.marcado?'✅':'❌'} ${esc(s.nome)}`).join('<br>')}</td></tr>`).join('');
-  main(`<h1>Dashboard SIGOA</h1><p class="muted">Visão simples para gestão: bateu o olho, sabe o que foi lançado.</p>
-    <div class="grid"><div class="card okBox"><b>✅ Escalas lançadas</b><h2>${abertas}</h2></div><div class="card pendBox"><b>❌ Não lançadas</b><h2>${nao}</h2></div><div class="card"><b>Total monitorado</b><h2>${escalas.length}</h2></div><div class="card"><b>Competência</b><h2>${mes}</h2></div></div>
-    <div class="card"><div class="row"><h3 style="margin-right:auto">Mapa de lançamento</h3><input id="dashBusca" placeholder="Filtrar prestador/serviço..." oninput="filtrarTabelaSimples(this.value)"></div>
-    <table id="tblDash"><thead><tr><th></th><th>Prestador</th><th>Serviço</th><th>Subescalas</th></tr></thead><tbody>${lista}</tbody></table></div>`);
-}
-function filtrarTabelaSimples(q){ q=normal(q); document.querySelectorAll('#tblDash tbody tr').forEach(tr=>tr.style.display=normal(tr.innerText).includes(q)?'':'none'); }
-async function escalasMes(){
-  const mes=new Date().toISOString().slice(0,7);
-  main(`<h1>Escalas do mês</h1><div class="card"><div class="grid"><div><label>Competência</label><input id="escMes" type="month" value="${mes}"></div><div><label>Busca</label><input id="escBusca" placeholder="Prestador, município ou serviço"></div><div><label>&nbsp;</label><button onclick="carregarEscalasMes()">Carregar</button></div></div></div><div id="escBox"></div>`);
-  carregarEscalasMes();
-}
-async function carregarEscalasMes(){
-  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
-  const rows=await api('/api/escalas-detalhadas?mes='+mes);
-  const q=normal($('#escBusca')?.value||'');
-  const filtradas=rows.filter(e=>normal(`${e.prestador} ${e.municipio} ${e.servico}`).includes(q));
-  const lancadas=filtradas.filter(x=>x.status==='LANÇADA').length, pendentes=filtradas.length-lancadas;
-  $('#escBox').innerHTML=`<div class="grid"><div class="card okBox"><b>✅ Lançadas</b><h2>${lancadas}</h2></div><div class="card pendBox"><b>❌ Não lançadas</b><h2>${pendentes}</h2></div><div class="card"><b>Total</b><h2>${filtradas.length}</h2></div></div>
-  <div class="card"><h3>Situação das escalas - ${mes}</h3><table><thead><tr><th>Status</th><th>Prestador</th><th>Serviço</th><th>Subitens</th><th>Ação</th></tr></thead><tbody>${filtradas.map(e=>`<tr><td class="emoji">${e.emoji}</td><td><b>${esc(e.prestador)}</b><br><span class="muted">${esc(e.municipio)}</span></td><td>${esc(e.servico)}</td><td>${(e.subitens||[]).map(s=>`${s.marcado?'✅':'❌'} ${esc(s.nome)} ${s.tipo==='QUANTITATIVO' && s.valor?.quantidade?`(${s.valor.quantidade})`:''}`).join('<br>')}</td><td>${canWrite()?`<button onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')">Lançar</button>`:`<button onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')">Ver</button>`}</td></tr>`).join('')}</tbody></table></div>`;
-}
-async function abrirEscalaFlutuante(pid,iid){
-  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
-  const rows=await api('/api/escalas-detalhadas?mes='+mes);
-  const e=rows.find(x=>x.prestadorId===pid && x.instrumentoId===iid); if(!e) return;
-  const body=`<h2>${esc(e.prestador)}</h2><p class="muted">${esc(e.municipio)} • ${esc(e.servico)} • ${esc(e.instrumento)}</p>
-  <div class="subbox">${(e.subitens||[]).map(s=>`<div class="subitem"><label>${s.tipo==='QUANTITATIVO'?'🔢':'☑️'} ${esc(s.nome)}</label>${s.tipo==='QUANTITATIVO'?`<input class="subQtd" data-id="${s.id}" type="number" min="0" value="${s.valor?.quantidade||''}" ${canWrite()?'':'disabled'}>`:`<select class="subCheck" data-id="${s.id}" ${canWrite()?'':'disabled'}><option value="">❌ Não lançado</option><option value="1" ${s.marcado?'selected':''}>✅ Lançado</option></select>`}</div>`).join('')}</div>
-  ${canWrite()?`<button class="ok" onclick="salvarSubEscalas('${pid}','${iid}')">Salvar lançamento</button>`:''}
-  <button class="btn2" onclick="fecharModal()">Fechar</button>`;
-  modal('Escala / subitens', body);
-}
-async function salvarSubEscalas(pid,iid){
-  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
-  const subitens={};
-  document.querySelectorAll('.subQtd').forEach(i=>subitens[i.dataset.id]={quantidade:Number(i.value||0)});
-  document.querySelectorAll('.subCheck').forEach(i=>subitens[i.dataset.id]={checked:i.value==='1'});
-  await api('/api/escalas/subitens',{method:'POST',body:JSON.stringify({mes,prestadorId:pid,instrumentoId:iid,subitens})});
-  fecharModal(); carregarEscalasMes(); 
-}
-function modal(titulo, html){
-  document.querySelector('#floatModal')?.remove();
-  document.body.insertAdjacentHTML('beforeend',`<div id="floatModal" class="modalBack" onclick="if(event.target.id==='floatModal')fecharModal()"><div class="modalBox"><div class="row"><h2 style="margin-right:auto">${titulo}</h2><button class="btn2" onclick="fecharModal()">×</button></div>${html}</div></div>`);
-}
-function fecharModal(){document.querySelector('#floatModal')?.remove();}
-let CONTRATOS_CACHE=[];
-async function sigcDashboard(){
-  CONTRATOS_CACHE=await api('/api/contratos').catch(()=>[]);
-  const total=CONTRATOS_CACHE.length;
-  const valor=CONTRATOS_CACHE.reduce((s,c)=>s+(Number(String(c.valor_global||'').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'))||0),0);
-  const hoje=new Date();
-  const vencendo=CONTRATOS_CACHE.filter(c=>{const d=parseBR(c.data_vigencia); if(!d)return false; const dias=(d-hoje)/86400000; return dias>=0&&dias<=90}).length;
-  main(`<h1>SIGC Contratos</h1><p class="muted">Integrado à base do SIGOA: o contrato alimenta prestador/serviço sem cadastro duplicado.</p>
-  <div class="grid"><div class="card"><b>Contratos</b><h2>${total}</h2></div><div class="card"><b>Valor global</b><h2>${valor.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</h2></div><div class="card pendBox"><b>Vencendo 90 dias</b><h2>${vencendo}</h2></div><div class="card"><b>Perfil</b><h2>${ME.perfil}</h2></div></div>
-  <div class="card"><div class="row"><input id="cBusca" placeholder="Buscar contrato, processo, executante..." oninput="renderContratos()">${canWrite()?'<button onclick="novoContratoSigc()">Novo contrato</button>':''}</div><div id="contratosBox"></div></div>`);
-  renderContratos();
-}
-function parseBR(s){const m=String(s||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m)return null; return new Date(+m[3],+m[2]-1,+m[1]);}
-function renderContratos(){
-  const q=normal($('#cBusca')?.value||'');
-  const rows=CONTRATOS_CACHE.filter(c=>normal(Object.values(c).join(' ')).includes(q)).map(c=>`<tr onclick="abrirContrato('${c.id}')"><td><b>${esc(c.numero_contrato||'-')}</b><br><span class="muted">${esc(c.numero_processo||'')}</span></td><td>${esc(c.executante)}</td><td>${esc(c.categoria)}</td><td>${esc(c.municipio)}</td><td>${esc(c.data_vigencia)}</td><td>${esc(c.valor_global)}</td></tr>`).join('');
-  $('#contratosBox').innerHTML=`<table><thead><tr><th>Contrato/Processo</th><th>Executante</th><th>Categoria</th><th>Município</th><th>Vigência</th><th>Valor</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-function abrirContrato(id){
-  const c=CONTRATOS_CACHE.find(x=>String(x.id)===String(id)); if(!c)return;
-  const ro=canWrite()?'':'disabled';
-  const campos=['categoria','executante','municipio','numero_contrato','numero_processo','tr','ta','data_inicio','data_vigencia','valor_global','gestor','setor','link_contrato','link_processo','link_ta','observacoes'];
-  const html=`<div class="grid2">${campos.map(k=>`<div><label>${k.replaceAll('_',' ')}</label><input id="ct_${k}" value="${esc(c[k]||'')}" ${ro}></div>`).join('')}</div>
-  ${canWrite()?`<button class="ok" onclick="salvarContrato('${c.id}')">Salvar contrato</button>`:''}<button class="btn2" onclick="fecharModal()">Fechar</button>`;
-  modal(`Contrato ${esc(c.numero_contrato||'')}`, html);
-}
-async function salvarContrato(id){
-  const c=CONTRATOS_CACHE.find(x=>String(x.id)===String(id)); if(!c)return;
-  ['categoria','executante','municipio','numero_contrato','numero_processo','tr','ta','data_inicio','data_vigencia','valor_global','gestor','setor','link_contrato','link_processo','link_ta','observacoes'].forEach(k=>c[k]=$('#ct_'+k).value);
-  try{await api('/api/contratos/'+id,{method:'PUT',body:JSON.stringify(c)});}catch(e){await api('/api/contratos',{method:'POST',body:JSON.stringify(CONTRATOS_CACHE)});}
-  fecharModal(); sigcDashboard();
-}
-function novoContratoSigc(){
-  const id=Date.now(); CONTRATOS_CACHE.unshift({id,categoria:'',executante:'',municipio:'',numero_contrato:'',numero_processo:'',tr:'',ta:'',data_inicio:'',data_vigencia:'',valor_global:'',gestor:'',setor:'',link_contrato:'',link_processo:'',link_ta:'',observacoes:''});
-  abrirContrato(id);
-}

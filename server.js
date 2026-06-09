@@ -86,60 +86,7 @@ function bootstrap(){
     write('prestadores.json', prestadores);
   }
   ['ofertas.json','auditoria.json','competencias.json','escalas.json','tetos.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
-  // Base única SIGOA + SIGC
-  if(!read('contratos.json', null)) write('contratos.json', []);
-  ensureGestaoUser();
-  syncContratosComPrestadores();
   syncAuxiliares();
-}
-function ensureGestaoUser(){
-  const users = read('usuarios.json',[]);
-  if(!users.some(u=>u.login==='gestao')){
-    users.push({id:uid('u'), nome:'Gestão Consulta Integrada', login:'gestao', perfil:'GESTAO', status:'ATIVO', senha:bcrypt.hashSync('gestao123',10), trocarSenha:false, prestadoresVinculados:[]});
-    write('usuarios.json', users);
-  }
-}
-function normNameKey(s){ return upperClean(String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')); }
-function syncContratosComPrestadores(){
-  const contratos = read('contratos.json',[]);
-  if(!Array.isArray(contratos) || !contratos.length) return;
-  const ps = read('prestadores.json',[]);
-  let changed=false;
-  contratos.forEach(c=>{
-    const nome = String(c.executante||'').trim();
-    if(!nome) return;
-    const mun = String(c.municipio||'').trim() || 'NÃO INFORMADO';
-    let p = ps.find(x=>normNameKey(x.nome)===normNameKey(nome) && normNameKey(x.municipio)===normNameKey(mun));
-    if(!p){
-      p={id:uid('p'), nome, municipio:mun, cnpj:'', ativo:true, observacaoGeral:'Criado automaticamente pela base SIGC', instrumentos:[]};
-      ps.push(p); changed=true;
-    }
-    const numero=String(c.numero_contrato||'').trim();
-    if(numero && !(p.instrumentos||[]).some(i=>String(i.numero||'').trim()===numero)){
-      p.instrumentos=p.instrumentos||[];
-      p.instrumentos.push({
-        id:uid('i'), tipo:'CONTRATO', natureza:'CONTRATUALIZADA', numero,
-        vigenciaInicio:brToIso(c.data_inicio), vigenciaFim:brToIso(c.data_vigencia),
-        servico:String(c.categoria||'').trim() || 'NÃO INFORMADO', ativo:true, bloqueado:false,
-        motivoBloqueio:'', observacao:'Vinculado automaticamente ao SIGC',
-        contratoSigcId:c.id, procedimentos:[], subescalas: defaultSubescalas(c.categoria)
-      });
-      changed=true;
-    }
-  });
-  if(changed) write('prestadores.json', ps);
-}
-function defaultSubescalas(servico){
-  const s=normNameKey(servico);
-  if(s.includes('CIRURG')) return [
-    {id:uid('sub'), nome:'Ortopedia', tipo:'CHECK', obrigatorio:true},
-    {id:uid('sub'), nome:'Urologia', tipo:'CHECK', obrigatorio:true},
-    {id:uid('sub'), nome:'Cirurgia Geral', tipo:'CHECK', obrigatorio:true}
-  ];
-  if(s.includes('HEMODIN')) return [{id:uid('sub'), nome:'Hemodinâmica', tipo:'QUANTITATIVO', obrigatorio:true}];
-  if(s.includes('OFTAL')) return [{id:uid('sub'), nome:'Oftalmologia', tipo:'QUANTITATIVO', obrigatorio:true}];
-  if(s.includes('DIAGN')) return [{id:uid('sub'), nome:'Diagnóstico', tipo:'QUANTITATIVO', obrigatorio:true}];
-  return [{id:uid('sub'), nome:'Escala/Oferta principal', tipo:'CHECK', obrigatorio:true}];
 }
 function normNatureza(n){ n=String(n||'').toUpperCase(); if(n.includes('PROPRIA')) return 'REDE PROPRIA'; if(n.includes('PACT')) return 'PACTUACAO'; if(n.includes('CONVEN')) return 'CONVENIO'; if(n.includes('GESTAO')) return 'CONTRATO DE GESTAO'; return n||'CONTRATUALIZADA'; }
 function normInstrumento(n){ const x=normNatureza(n); if(x==='REDE PROPRIA') return 'REDE PROPRIA'; if(x==='PACTUACAO') return 'PACTUACAO'; if(x==='CONVENIO') return 'CONVENIO'; if(x==='CONTRATO DE GESTAO') return 'CONTRATO DE GESTAO'; return 'CONTRATO'; }
@@ -173,7 +120,7 @@ function user(){return (req,res,next)=>next()}
 function auth(req,res,next){ if(!req.session.user) return res.status(401).json({erro:'Não autenticado'}); next(); }
 function roles(...r){ return (req,res,next)=>{ if(!req.session.user) return res.status(401).json({erro:'Não autenticado'}); if(!r.includes(req.session.user.perfil)) return res.status(403).json({erro:'Acesso negado'}); next(); } }
 function canWrite(req,res,next){ return roles('ADMINISTRADOR','OPERADOR')(req,res,next); }
-function canViewReports(req,res,next){ return roles('ADMINISTRADOR','AUDITOR','CONSULTA','GESTAO')(req,res,next); }
+function canViewReports(req,res,next){ return roles('ADMINISTRADOR','AUDITOR','CONSULTA')(req,res,next); }
 function audit(req, acao, entidade, id, detalhes){
   const arr=read('auditoria.json',[]);
   arr.unshift({id:uid('a'), dataHora:now(), usuario:req.session.user?.login||'sistema', nome:req.session.user?.nome||'Sistema', perfil:req.session.user?.perfil||'SISTEMA', acao, entidade, entidadeId:id, detalhes, ip:req.ip});
@@ -313,86 +260,6 @@ app.get('/api/relatorios/excel',canViewReports,(req,res)=>{ const a=ofertasPerio
 app.get('/api/auditoria',roles('ADMINISTRADOR','AUDITOR'),(req,res)=>res.json(read('auditoria.json',[]).slice(0,1000)));
 app.post('/api/competencias/:mes/fechar',roles('ADMINISTRADOR'),(req,res)=>{ const cs=read('competencias.json',[]); let c=cs.find(x=>x.mes===req.params.mes); if(!c){c={mes:req.params.mes}; cs.push(c)} c.status='FECHADA'; c.fechadoPor=req.session.user.login; c.fechadoEm=now(); write('competencias.json',cs); audit(req,'FECHAR_COMPETENCIA','competencia',req.params.mes,[{campo:'mes',novo:req.params.mes}]); res.json(c); });
 
-
-function escalaSubStatus(escalas, mes, prestadorId, instrumentoId, subitens){
-  const esc = escalas.find(e=>e.mes===mes && e.prestadorId===prestadorId && (e.instrumentoId||'')===instrumentoId);
-  const lanc = esc?.subitens || {};
-  const obrig = (subitens||[]).filter(s=>s.obrigatorio!==false);
-  if(!obrig.length) return esc ? 'LANÇADA' : 'PENDENTE';
-  return obrig.every(s=>{
-    const v=lanc[s.id] || lanc[s.nome];
-    return s.tipo==='QUANTITATIVO' ? Number(v?.quantidade||v||0)>0 : !!(v?.checked ?? v);
-  }) ? 'LANÇADA' : 'PENDENTE';
-}
-
-app.get('/api/contratos',auth,(req,res)=>res.json(read('contratos.json',[])));
-app.post('/api/contratos',canWrite,(req,res)=>{
-  if(!Array.isArray(req.body)) return res.status(400).json({erro:'Envie uma lista de contratos.'});
-  write('contratos.json', req.body);
-  syncContratosComPrestadores();
-  audit(req,'SALVAR_CONTRATOS_SIGC','contrato','lote',[{campo:'total',novo:req.body.length}]);
-  res.json({ok:true,total:req.body.length});
-});
-app.put('/api/contratos/:id',canWrite,(req,res)=>{
-  const cs=read('contratos.json',[]);
-  const c=cs.find(x=>String(x.id)===String(req.params.id));
-  if(!c) return res.status(404).json({erro:'Contrato não encontrado'});
-  const old={...c};
-  Object.assign(c, req.body||{});
-  write('contratos.json',cs);
-  syncContratosComPrestadores();
-  audit(req,'ALTERAR_CONTRATO_SIGC','contrato',c.id,diff(old,c,Object.keys({...old,...c})));
-  res.json(c);
-});
-
-app.post('/api/prestadores/:pid/instrumentos/:iid/subescalas',canWrite,(req,res)=>{
-  if(!exigirPrestadorPermitido(req,res,req.params.pid)) return;
-  const ps=read('prestadores.json',[]);
-  const {i}=findInstrumento(ps,req.params.pid,req.params.iid);
-  if(!i) return res.status(404).json({erro:'Instrumento não encontrado'});
-  i.subescalas=i.subescalas||[];
-  const item={id:uid('sub'), nome:req.body.nome||'Subescala', tipo:req.body.tipo==='QUANTITATIVO'?'QUANTITATIVO':'CHECK', obrigatorio:req.body.obrigatorio!==false};
-  i.subescalas.push(item); write('prestadores.json',ps);
-  audit(req,'CRIAR_SUBESCALA','instrumento',i.id,[{campo:'subescala',novo:item.nome},{campo:'tipo',novo:item.tipo}]);
-  res.json(item);
-});
-app.post('/api/escalas/subitens',canWrite,(req,res)=>{
-  const {mes,prestadorId,instrumentoId,subitens}=req.body;
-  if(competenciaFechada(mes) && req.session.user.perfil!=='ADMINISTRADOR') return res.status(403).json({erro:'Competência fechada'});
-  const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,prestadorId,instrumentoId);
-  if(!p || !i) return res.status(404).json({erro:'Prestador/serviço não encontrado'});
-  if(!exigirPrestadorPermitido(req,res,prestadorId)) return;
-  const escalas=read('escalas.json',[]);
-  let e=escalas.find(x=>x.mes===mes && x.prestadorId===prestadorId && (x.instrumentoId||'')===instrumentoId);
-  if(!e){ e={id:uid('esc'), mes, prestadorId, instrumentoId}; escalas.push(e); }
-  e.prestador=p.nome; e.municipio=p.municipio; e.servico=i.servico||''; e.instrumento=i.numero||i.tipo||'';
-  e.subitens = subitens || {};
-  e.status = escalaSubStatus(escalas, mes, prestadorId, instrumentoId, i.subescalas||[]);
-  e.operadorId=req.session.user?.id||''; e.operador=req.session.user?.nome||req.session.user?.login||''; e.login=req.session.user?.login||''; e.lancadaEm=now();
-  write('escalas.json',escalas);
-  audit(req,'LANÇAR_SUBESCALAS','escala',e.id,[{campo:'prestador',novo:p.nome},{campo:'servico',novo:i.servico},{campo:'mes',novo:mes}]);
-  res.json(e);
-});
-app.get('/api/escalas-detalhadas',auth,(req,res)=>{
-  const mes=String(req.query.mes||new Date().toISOString().slice(0,7));
-  const ps=filtrarPrestadoresPorUsuario(req, read('prestadores.json',[]));
-  const escalas=read('escalas.json',[]).filter(e=>e.mes===mes);
-  const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes);
-  const rows=[];
-  ps.forEach(p=>(p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{
-    if(!i.subescalas || !i.subescalas.length) i.subescalas=defaultSubescalas(i.servico);
-    const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id);
-    const subitens=(i.subescalas||[]).map(s=>{
-      const v=esc?.subitens?.[s.id] || esc?.subitens?.[s.nome] || {};
-      const marcado=s.tipo==='QUANTITATIVO' ? Number(v.quantidade||v||0)>0 : !!(v.checked ?? v);
-      return {...s, valor:v, marcado};
-    });
-    const status=escalaSubStatus(escalas,mes,p.id,i.id,i.subescalas||[]);
-    rows.push({mes,prestadorId:p.id,instrumentoId:i.id,prestador:p.nome,municipio:p.municipio,servico:i.servico||'-',instrumento:i.numero||i.tipo||'-',status,emoji:status==='LANÇADA'?'✅':'❌',subitens,operador:esc?.operador||'',lancadaEm:esc?.lancadaEm||'',totalOfertaMes:ofs.filter(o=>o.prestadorId===p.id&&o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0)});
-  }));
-  res.json(rows);
-});
-
 function publicCheck(req,res,next){ if((req.headers['x-api-key']||req.query.key)!==PUBLIC_API_KEY) return res.status(401).json({erro:'API key inválida'}); next(); }
 
 app.post('/api/public/rede-executora/prestadores/:id/bloqueio', publicCheck, (req,res)=>{ return res.status(403).json({erro:'Painel Rede Executora é apenas para consulta. Use o SIGOA administrativo.'});
@@ -427,7 +294,7 @@ app.post('/api/public/rede-executora/ofertas', publicCheck, (req,res)=>{ return 
   res.json({ok:true});
 });
 
-app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const tetos=tetosAtivos(mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ p.instrumentos.filter(i=>i.ativo!==false).forEach(i=>{ const teto=tetoServico(tetos,p.id,i.id); const lancado=ofs.filter(o=>o.prestadorId===p.id&&o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0); const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', tetoMensal:teto?Number(teto.quantidade||0):null, tetoObservacao:teto?.observacao||'', lancadoMensal:lancado, procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const tq=tetoProcedimento(tetos,p.id,i.id,pr.codigo); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', tetoMensal:tq?Number(tq.quantidade||0):null, tetoObservacao:tq?.observacao||'', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
+app.get('/api/public/rede-executora', publicCheck, (req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=read('prestadores.json',[]).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const tetos=tetosAtivos(mes); const municipios={}; ps.filter(p=>p.ativo!==false).forEach(p=>{ (p.instrumentos||[]).filter(i=>i.ativo!==false).sort((a,b)=>String(a.servico||'').localeCompare(String(b.servico||''),'pt-BR')).forEach(i=>{ const teto=tetoServico(tetos,p.id,i.id); const lancado=ofs.filter(o=>o.prestadorId===p.id&&o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0); const item={prestadorId:p.id, instrumentoId:i.id, municipio:p.municipio, prestador:p.nome, servico:i.servico, natureza:i.natureza, tipo:i.tipo, numero_contrato:i.numero, contrato_fim:i.vigenciaFim, bloqueado:!!(p.bloqueado||i.bloqueado), motivo_bloqueio:p.motivoBloqueio||i.motivoBloqueio||'', observacao:i.observacao||'', tetoMensal:teto?Number(teto.quantidade||0):null, tetoObservacao:teto?.observacao||'', lancadoMensal:lancado, procedimentos:(i.procedimentos||[]).filter(pr=>pr.ativo!==false).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(pr=>{ const o=ofs.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&onlyDigits(x.codigo)===onlyDigits(pr.codigo)); const tq=tetoProcedimento(tetos,p.id,i.id,pr.codigo); const q=o?Number(o.quantidade||0):null; return {codigo:pr.codigo,nome:pr.nome,oferta:q>0?q:'-', tetoMensal:tq?Number(tq.quantidade||0):null, tetoObservacao:tq?.observacao||'', instrumentoId:i.id, prestadorId:p.id, servico:i.servico}; })}; if(!municipios[p.municipio]) municipios[p.municipio]=[]; municipios[p.municipio].push(item); }); }); res.json({competencia:mes, ultimaAtualizacao:now(), municipios}); });
 
 async function start(){
   try{
