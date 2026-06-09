@@ -29,7 +29,29 @@ async function load(){
 }
 async function logout(){await api('/api/logout',{method:'POST'}); ME=null; login()}
 function main(html){$('#main').innerHTML=html}
-async function dashboard(){await load(); const mes=new Date().toISOString().slice(0,7); const ofertas=await api('/api/ofertas?mes='+mes).catch(()=>[]); const escalas=await api('/api/escalas?mes='+mes).catch(()=>[]); const total=ofertas.reduce((s,o)=>s+Number(o.quantidade||0),0); const instrumentos=PRESTADORES.flatMap(p=>p.instrumentos.map(i=>({p,i}))); const lancadas=escalas.filter(e=>e.status==='LANÇADA').length, pendentes=escalas.filter(e=>e.status!=='LANÇADA').length; main(`<h1>Dashboard</h1><div class="grid"><div class="card"><b>Oferta do mês</b><h2>${total}</h2></div><div class="card"><b>Prestadores visíveis</b><h2>${PRESTADORES.length}</h2></div><div class="card"><b>Escalas lançadas</b><h2>${lancadas}</h2></div><div class="card"><b>Escalas pendentes</b><h2>${pendentes}</h2></div></div><div class="card"><h3>Acompanhamento da competência ${mes}</h3>${tableRows(escalas.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0})))}</div><div class="card"><h3>Atalhos</h3>${canWrite()?'<button onclick="oferta()">Lançar oferta</button>':''}<button onclick="escalasMes()">Ver escalas do mês</button>${isAdmin()?'<button onclick="prestadores()">Gerenciar prestadores</button>':''}</div>`)}
+function statusEscalaLabel(st){
+  return st==='COMPLETA'?'✅ Completa':st==='PARCIAL'?'⚠️ Parcial':st==='PENDENTE'?'❌ Pendente':'⚪ Sem subescala';
+}
+function renderSubescalas(e){
+  const subs=e.subescalas||[];
+  if(!subs.length) return '<div class="muted">Nenhuma subescala/procedimento cadastrado para este serviço.</div>';
+  return `<div class="subesc-list">${subs.map(s=>`<div class="subesc-item"><span>${s.preenchida?'✅':'❌'} <b>${esc(s.nome)}</b>${s.codigo?` <span class="muted">${esc(s.codigo)}</span>`:''}</span><span>${s.preenchida?Number(s.quantidade||0).toLocaleString('pt-BR'):'não lançada'}</span></div>`).join('')}</div>`;
+}
+function renderEscalasCards(rows){
+  if(!rows.length) return '<div class="card">Nenhuma escala encontrada para a competência.</div>';
+  return rows.map(e=>`<details class="card escala-card" ${e.status!=='COMPLETA'?'open':''}><summary><b>${esc(e.prestador)}</b> — ${esc(e.servico||'-')} <span class="tag">${statusEscalaLabel(e.status)}</span><br><span class="muted">${esc(e.municipio||'')} • ${e.subescalasPreenchidas||0}/${e.totalSubescalas||0} subescalas preenchidas • Total: ${Number(e.totalOfertaMes||0).toLocaleString('pt-BR')}</span></summary>${renderSubescalas(e)}</details>`).join('');
+}
+async function dashboard(){
+  await load();
+  const mes=new Date().toISOString().slice(0,7);
+  const ofertas=await api('/api/ofertas?mes='+mes).catch(()=>[]);
+  const escalas=await api('/api/escalas?mes='+mes).catch(()=>[]);
+  const total=ofertas.reduce((s,o)=>s+Number(o.quantidade||0),0);
+  const completas=escalas.filter(e=>e.status==='COMPLETA').length;
+  const parciais=escalas.filter(e=>e.status==='PARCIAL').length;
+  const pendentes=escalas.filter(e=>e.status==='PENDENTE').length;
+  main(`<h1>Dashboard de Escalas</h1><p class="muted">Competência: <b>${mesLabel(mes)}</b></p><div class="grid"><div class="card"><b>Oferta lançada no mês</b><h2>${total.toLocaleString('pt-BR')}</h2></div><div class="card"><b>✅ Escalas completas</b><h2>${completas}</h2></div><div class="card"><b>⚠️ Escalas parciais</b><h2>${parciais}</h2></div><div class="card"><b>❌ Escalas pendentes</b><h2>${pendentes}</h2></div></div><div class="card"><h3>Acompanhamento por prestador, serviço e subescalas</h3><p class="muted">O status é calculado automaticamente: todas preenchidas = ✅; algumas = ⚠️; nenhuma = ❌.</p></div>${renderEscalasCards(escalas)}<div class="card"><h3>Atalhos</h3>${canWrite()?'<button onclick="oferta()">Lançar escalas/ofertas</button>':''}<button onclick="escalasMes()">Ver escalas do mês</button>${isAdmin()?'<button onclick="prestadores()">Gestão de contratos</button>':''}</div>`)
+}
 async function prestadores(){
   await load();
   const rows=PRESTADORES.map(p=>`<tr><td>${nomePrestadorServico(p)}</td><td>${(p.instrumentos||[]).length}</td><td>${p.ativo!==false?'<span class="tag ativo">Ativo</span>':'<span class="tag bloq">Inativo</span>'}</td><td><button onclick="editarPrestador('${p.id}')">Abrir</button></td></tr>`).join('');
@@ -168,8 +190,13 @@ function macroNome(m){const macro1=['ALTO PARAÍSO','ARIQUEMES','BURITIS','CACAU
 async function relPanoramaMacro(){await load();const map={};PRESTADORES.forEach(p=>(p.instrumentos||[]).forEach(i=>{const ma=macroNome(p.municipio);if(!map[ma])map[ma]={Macro:ma,Municípios:new Set(),Prestadores:new Set(),Serviços:0,Procedimentos:0,Bloqueios:0};map[ma].Municípios.add(p.municipio);map[ma].Prestadores.add(p.nome);map[ma].Serviços++;map[ma].Procedimentos+=(i.procedimentos||[]).length;if(p.bloqueado||i.bloqueado)map[ma].Bloqueios++}));const rows=Object.values(map).map(x=>({Macro:x.Macro,Municípios:x.Municípios.size,Prestadores:x.Prestadores.size,Serviços:x.Serviços,Procedimentos:x.Procedimentos,Bloqueios:x.Bloqueios}));setRel('Panorama Macro 1 e Macro 2',`<div class="card">${tableRows(rows)}</div>`,rows)}
 
 async function escalasMes(){const mes=new Date().toISOString().slice(0,7); main(`<h1>Escalas do mês</h1><div class="card"><div class="grid"><div><label>Competência</label><input id="escMes" type="month" value="${mes}"></div><div><label>&nbsp;</label><button onclick="carregarEscalasMes()">Carregar</button></div></div></div><div id="escBox"></div>`); carregarEscalasMes()}
-async function carregarEscalasMes(){const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);const rows=await api('/api/escalas?mes='+mes);const lancadas=rows.filter(x=>x.status==='LANÇADA').length, pendentes=rows.length-lancadas;$('#escBox').innerHTML=`<div class="grid"><div class="card"><b>Lançadas</b><h2>${lancadas}</h2></div><div class="card"><b>Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total de prestadores</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mesLabel(mes)}</h3>${tableRows(rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0})))}</div>`}
-async function relEscalasLancadas(){const p=periodo();const rows=await api('/api/escalas?mes='+p.fim);const out=rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:e.status,Operador:e.operador||'-',Lançamento:e.lancadaEm?new Date(e.lancadaEm).toLocaleString('pt-BR'):'-',Total:e.totalOfertaMes||0}));setRel('Escalas lançadas e pendentes',`<div class="card"><p>Mostra os prestadores com escala lançada ou pendente na competência final selecionada: ${mesLabel(p.fim)}.</p>${tableRows(out)}</div>`,out)}
+async function carregarEscalasMes(){
+  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
+  const rows=await api('/api/escalas?mes='+mes);
+  const completas=rows.filter(x=>x.status==='COMPLETA').length, parciais=rows.filter(x=>x.status==='PARCIAL').length, pendentes=rows.filter(x=>x.status==='PENDENTE').length;
+  $('#escBox').innerHTML=`<div class="grid"><div class="card"><b>✅ Completas</b><h2>${completas}</h2></div><div class="card"><b>⚠️ Parciais</b><h2>${parciais}</h2></div><div class="card"><b>❌ Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total monitorado</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mesLabel(mes)}</h3><p class="muted">Clique em cada prestador/serviço para ver as subescalas.</p></div>${renderEscalasCards(rows)}`
+}
+async function relEscalasLancadas(){const p=periodo();const rows=await api('/api/escalas?mes='+p.fim);const out=rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:statusEscalaLabel(e.status),Subescalas:`${e.subescalasPreenchidas||0}/${e.totalSubescalas||0}`,Operador:e.operador||'-',Total:e.totalOfertaMes||0}));setRel('Escalas por subescalas',`<div class="card"><p>Mostra se cada prestador/serviço está completo, parcial ou pendente na competência ${mesLabel(p.fim)}.</p>${tableRows(out)}</div>${renderEscalasCards(rows)}`,out)}
 
 
 async function relTetosMensais(){const p=periodo();const rows=await api('/api/tetos/resumo?mes='+p.fim);const out=rows.map(r=>({Prestador:r.prestador,Serviço:r.servico,Município:r.municipio,'Teto mensal':r.tetoMensal??'Não definido','Lançado':r.lancado,'Diferença':r.diferenca??'-','% executado':r.percentual??'-',Observação:r.observacao||''}));setRel('Tetos mensais x lançamento',`<div class="card"><p>Compara o teto mensal consolidado por prestador/tipo de serviço com o quantitativo lançado na competência ${p.fim}.</p>${tableRows(out)}</div>`,out)}

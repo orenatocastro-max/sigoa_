@@ -251,7 +251,37 @@ app.put('/api/tetos/:id',roles('ADMINISTRADOR'),(req,res)=>{
 });
 
 
-app.get('/api/escalas',auth,(req,res)=>{ const mes=String(req.query.mes||new Date().toISOString().slice(0,7)); const ps=filtrarPrestadoresPorUsuario(req, read('prestadores.json',[])); const escalas=read('escalas.json',[]).filter(e=>e.mes===mes); const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes); const usuarios=read('usuarios.json',[]); const rows=[]; ps.forEach(p=>{ (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{ const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id); const total=ofs.filter(o=>o.prestadorId===p.id && o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0); const operadorNome=esc?.operador || usuarios.filter(u=>(u.prestadoresVinculados||[]).includes(p.id)).map(u=>u.nome).join(', '); rows.push({mes, prestadorId:p.id, instrumentoId:i.id, prestador:p.nome, servico:i.servico||'-', instrumento:i.numero||i.tipo||'-', municipio:p.municipio, status: esc?'LANÇADA':'PENDENTE', operador:operadorNome||'', lancadaEm:esc?.lancadaEm||'', totalOfertaMes:total}); }); }); res.json(rows); });
+app.get('/api/escalas',auth,(req,res)=>{
+  const mes=String(req.query.mes||new Date().toISOString().slice(0,7));
+  const ps=filtrarPrestadoresPorUsuario(req, read('prestadores.json',[]));
+  const escalas=read('escalas.json',[]).filter(e=>e.mes===mes);
+  const ofs=read('ofertas.json',[]).filter(o=>o.mes===mes);
+  const usuarios=read('usuarios.json',[]);
+  const norm=s=>String(s||'').replace(/\D/g,'');
+  const rows=[];
+  ps.forEach(p=>{
+    (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{
+      const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id);
+      const procs=(i.procedimentos||[]).filter(pr=>pr.ativo!==false);
+      const total=ofs.filter(o=>o.prestadorId===p.id && o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0);
+      const subescalas=procs.map(pr=>{
+        const o=ofs.find(x=>x.prestadorId===p.id && x.instrumentoId===i.id && norm(x.codigo)===norm(pr.codigo));
+        const quantidade=Number(o?.quantidade||0);
+        return {codigo:pr.codigo, nome:pr.nome, quantidade, preenchida:quantidade>0, observacao:o?.observacao||'', atualizadoEm:o?.alteradoEm||o?.criadoEm||''};
+      });
+      const preenchidas=subescalas.filter(x=>x.preenchida).length;
+      let status='PENDENTE';
+      if(!subescalas.length) status='SEM_SUBESCALA';
+      else if(preenchidas===0) status='PENDENTE';
+      else if(preenchidas<subescalas.length) status='PARCIAL';
+      else status='COMPLETA';
+      const operadorNome=esc?.operador || usuarios.filter(u=>(u.prestadoresVinculados||[]).includes(p.id)).map(u=>u.nome).join(', ');
+      rows.push({mes, prestadorId:p.id, instrumentoId:i.id, prestador:p.nome, servico:i.servico||'-', instrumento:i.numero||i.tipo||'-', municipio:p.municipio, status, operador:operadorNome||'', lancadaEm:esc?.lancadaEm||'', totalOfertaMes:total, subescalas, totalSubescalas:subescalas.length, subescalasPreenchidas:preenchidas});
+    });
+  });
+  rows.sort((a,b)=>String(a.prestador).localeCompare(String(b.prestador),'pt-BR') || String(a.servico).localeCompare(String(b.servico),'pt-BR'));
+  res.json(rows);
+});
 
 function ofertasPeriodo(inicio,fim){ const ini=String(inicio||'0000-00').slice(0,7), fi=String(fim||'9999-99').slice(0,7); return read('ofertas.json',[]).filter(o=>o.mes>=ini && o.mes<=fi); }
 app.get('/api/relatorios/resumo',canViewReports,(req,res)=>{ const a=ofertasPeriodo(req.query.inicio,req.query.fim); const proc={}, prest={}, mun={}, serv={}; a.forEach(o=>{ const q=Number(o.quantidade||0); proc[o.nome]=(proc[o.nome]||0)+q; prest[`${o.prestador} — ${o.servico||'-'}`]=(prest[`${o.prestador} — ${o.servico||'-'}`]||0)+q; mun[o.municipio]=(mun[o.municipio]||0)+q; serv[o.servico]=(serv[o.servico]||0)+q; }); res.json({total:a.reduce((s,o)=>s+Number(o.quantidade||0),0), porProcedimento:proc, porPrestador:prest, porMunicipio:mun, porServico:serv}); });
