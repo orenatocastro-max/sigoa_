@@ -192,3 +192,107 @@ async function resetUser(id){const nova=prompt('Nova senha provisória','123456'
 function perfil(){main(`<h1>Minha senha</h1><div class="card"><label>Senha atual</label><input id="sa" type="password"><label>Nova senha</label><input id="ns" type="password"><button onclick="trocarSenha()">Alterar senha</button></div>`)}
 async function trocarSenha(){await api('/api/minha-senha',{method:'POST',body:JSON.stringify({senhaAtual:$('#sa').value,novaSenha:$('#ns').value})}); alert('Senha alterada')}
 init();
+
+
+/* ===== Integração SIGOA + SIGC v1 ===== */
+function perfilGestao(){ return ME?.perfil==='GESTAO'; }
+function canAudit(){return ['ADMINISTRADOR','AUDITOR','CONSULTA','GESTAO'].includes(ME?.perfil)}
+function shell(){
+  app.innerHTML=`<div class="wrap"><div class="side"><h2>SIGO+SIGC</h2><p class="small">Base única assistencial e contratual</p><p>${ME.nome}<br><b>${ME.perfil}</b></p>
+  <button onclick="dashboard()">Dashboard SIGOA</button>
+  <button onclick="sigcDashboard()">SIGC Contratos</button>
+  <button onclick="prestadores()">Prestadores</button>
+  ${canWrite()?'<button onclick="oferta()">Oferta mensal</button>':''}
+  <button onclick="escalasMes()">Escalas do mês</button>
+  ${canWrite()?'<button onclick="sigtap()">Base SIGTAP</button>':''}
+  ${canAudit()?'<button onclick="relatorios()">Relatórios</button>':''}
+  ${['ADMINISTRADOR','AUDITOR'].includes(ME.perfil)?'<button onclick="auditoria()">Auditoria</button>':''}
+  ${ME.perfil==='ADMINISTRADOR'?'<button onclick="usuarios()">Usuários</button><button onclick="auxiliares()">Cadastros auxiliares</button><button onclick="tetos()">Tetos</button>':''}
+  <button onclick="perfil()">Minha senha</button><button onclick="sair()">Sair</button></div><div class="main" id="main"></div></div>`;
+}
+async function dashboard(){
+  await load();
+  const mes=new Date().toISOString().slice(0,7);
+  const escalas=await api('/api/escalas-detalhadas?mes='+mes).catch(()=>[]);
+  const abertas=escalas.filter(e=>e.status==='LANÇADA').length;
+  const nao=escalas.length-abertas;
+  const lista=escalas.slice(0,80).map(e=>`<tr onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')"><td class="emoji">${e.emoji}</td><td><b>${esc(e.prestador)}</b><br><span class="muted">${esc(e.municipio)}</span></td><td>${esc(e.servico)}</td><td>${(e.subitens||[]).map(s=>`${s.marcado?'✅':'❌'} ${esc(s.nome)}`).join('<br>')}</td></tr>`).join('');
+  main(`<h1>Dashboard SIGOA</h1><p class="muted">Visão simples para gestão: bateu o olho, sabe o que foi lançado.</p>
+    <div class="grid"><div class="card okBox"><b>✅ Escalas lançadas</b><h2>${abertas}</h2></div><div class="card pendBox"><b>❌ Não lançadas</b><h2>${nao}</h2></div><div class="card"><b>Total monitorado</b><h2>${escalas.length}</h2></div><div class="card"><b>Competência</b><h2>${mes}</h2></div></div>
+    <div class="card"><div class="row"><h3 style="margin-right:auto">Mapa de lançamento</h3><input id="dashBusca" placeholder="Filtrar prestador/serviço..." oninput="filtrarTabelaSimples(this.value)"></div>
+    <table id="tblDash"><thead><tr><th></th><th>Prestador</th><th>Serviço</th><th>Subescalas</th></tr></thead><tbody>${lista}</tbody></table></div>`);
+}
+function filtrarTabelaSimples(q){ q=normal(q); document.querySelectorAll('#tblDash tbody tr').forEach(tr=>tr.style.display=normal(tr.innerText).includes(q)?'':'none'); }
+async function escalasMes(){
+  const mes=new Date().toISOString().slice(0,7);
+  main(`<h1>Escalas do mês</h1><div class="card"><div class="grid"><div><label>Competência</label><input id="escMes" type="month" value="${mes}"></div><div><label>Busca</label><input id="escBusca" placeholder="Prestador, município ou serviço"></div><div><label>&nbsp;</label><button onclick="carregarEscalasMes()">Carregar</button></div></div></div><div id="escBox"></div>`);
+  carregarEscalasMes();
+}
+async function carregarEscalasMes(){
+  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
+  const rows=await api('/api/escalas-detalhadas?mes='+mes);
+  const q=normal($('#escBusca')?.value||'');
+  const filtradas=rows.filter(e=>normal(`${e.prestador} ${e.municipio} ${e.servico}`).includes(q));
+  const lancadas=filtradas.filter(x=>x.status==='LANÇADA').length, pendentes=filtradas.length-lancadas;
+  $('#escBox').innerHTML=`<div class="grid"><div class="card okBox"><b>✅ Lançadas</b><h2>${lancadas}</h2></div><div class="card pendBox"><b>❌ Não lançadas</b><h2>${pendentes}</h2></div><div class="card"><b>Total</b><h2>${filtradas.length}</h2></div></div>
+  <div class="card"><h3>Situação das escalas - ${mes}</h3><table><thead><tr><th>Status</th><th>Prestador</th><th>Serviço</th><th>Subitens</th><th>Ação</th></tr></thead><tbody>${filtradas.map(e=>`<tr><td class="emoji">${e.emoji}</td><td><b>${esc(e.prestador)}</b><br><span class="muted">${esc(e.municipio)}</span></td><td>${esc(e.servico)}</td><td>${(e.subitens||[]).map(s=>`${s.marcado?'✅':'❌'} ${esc(s.nome)} ${s.tipo==='QUANTITATIVO' && s.valor?.quantidade?`(${s.valor.quantidade})`:''}`).join('<br>')}</td><td>${canWrite()?`<button onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')">Lançar</button>`:`<button onclick="abrirEscalaFlutuante('${e.prestadorId}','${e.instrumentoId}')">Ver</button>`}</td></tr>`).join('')}</tbody></table></div>`;
+}
+async function abrirEscalaFlutuante(pid,iid){
+  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
+  const rows=await api('/api/escalas-detalhadas?mes='+mes);
+  const e=rows.find(x=>x.prestadorId===pid && x.instrumentoId===iid); if(!e) return;
+  const body=`<h2>${esc(e.prestador)}</h2><p class="muted">${esc(e.municipio)} • ${esc(e.servico)} • ${esc(e.instrumento)}</p>
+  <div class="subbox">${(e.subitens||[]).map(s=>`<div class="subitem"><label>${s.tipo==='QUANTITATIVO'?'🔢':'☑️'} ${esc(s.nome)}</label>${s.tipo==='QUANTITATIVO'?`<input class="subQtd" data-id="${s.id}" type="number" min="0" value="${s.valor?.quantidade||''}" ${canWrite()?'':'disabled'}>`:`<select class="subCheck" data-id="${s.id}" ${canWrite()?'':'disabled'}><option value="">❌ Não lançado</option><option value="1" ${s.marcado?'selected':''}>✅ Lançado</option></select>`}</div>`).join('')}</div>
+  ${canWrite()?`<button class="ok" onclick="salvarSubEscalas('${pid}','${iid}')">Salvar lançamento</button>`:''}
+  <button class="btn2" onclick="fecharModal()">Fechar</button>`;
+  modal('Escala / subitens', body);
+}
+async function salvarSubEscalas(pid,iid){
+  const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
+  const subitens={};
+  document.querySelectorAll('.subQtd').forEach(i=>subitens[i.dataset.id]={quantidade:Number(i.value||0)});
+  document.querySelectorAll('.subCheck').forEach(i=>subitens[i.dataset.id]={checked:i.value==='1'});
+  await api('/api/escalas/subitens',{method:'POST',body:JSON.stringify({mes,prestadorId:pid,instrumentoId:iid,subitens})});
+  fecharModal(); carregarEscalasMes(); 
+}
+function modal(titulo, html){
+  document.querySelector('#floatModal')?.remove();
+  document.body.insertAdjacentHTML('beforeend',`<div id="floatModal" class="modalBack" onclick="if(event.target.id==='floatModal')fecharModal()"><div class="modalBox"><div class="row"><h2 style="margin-right:auto">${titulo}</h2><button class="btn2" onclick="fecharModal()">×</button></div>${html}</div></div>`);
+}
+function fecharModal(){document.querySelector('#floatModal')?.remove();}
+let CONTRATOS_CACHE=[];
+async function sigcDashboard(){
+  CONTRATOS_CACHE=await api('/api/contratos').catch(()=>[]);
+  const total=CONTRATOS_CACHE.length;
+  const valor=CONTRATOS_CACHE.reduce((s,c)=>s+(Number(String(c.valor_global||'').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'))||0),0);
+  const hoje=new Date();
+  const vencendo=CONTRATOS_CACHE.filter(c=>{const d=parseBR(c.data_vigencia); if(!d)return false; const dias=(d-hoje)/86400000; return dias>=0&&dias<=90}).length;
+  main(`<h1>SIGC Contratos</h1><p class="muted">Integrado à base do SIGOA: o contrato alimenta prestador/serviço sem cadastro duplicado.</p>
+  <div class="grid"><div class="card"><b>Contratos</b><h2>${total}</h2></div><div class="card"><b>Valor global</b><h2>${valor.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</h2></div><div class="card pendBox"><b>Vencendo 90 dias</b><h2>${vencendo}</h2></div><div class="card"><b>Perfil</b><h2>${ME.perfil}</h2></div></div>
+  <div class="card"><div class="row"><input id="cBusca" placeholder="Buscar contrato, processo, executante..." oninput="renderContratos()">${canWrite()?'<button onclick="novoContratoSigc()">Novo contrato</button>':''}</div><div id="contratosBox"></div></div>`);
+  renderContratos();
+}
+function parseBR(s){const m=String(s||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m)return null; return new Date(+m[3],+m[2]-1,+m[1]);}
+function renderContratos(){
+  const q=normal($('#cBusca')?.value||'');
+  const rows=CONTRATOS_CACHE.filter(c=>normal(Object.values(c).join(' ')).includes(q)).map(c=>`<tr onclick="abrirContrato('${c.id}')"><td><b>${esc(c.numero_contrato||'-')}</b><br><span class="muted">${esc(c.numero_processo||'')}</span></td><td>${esc(c.executante)}</td><td>${esc(c.categoria)}</td><td>${esc(c.municipio)}</td><td>${esc(c.data_vigencia)}</td><td>${esc(c.valor_global)}</td></tr>`).join('');
+  $('#contratosBox').innerHTML=`<table><thead><tr><th>Contrato/Processo</th><th>Executante</th><th>Categoria</th><th>Município</th><th>Vigência</th><th>Valor</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function abrirContrato(id){
+  const c=CONTRATOS_CACHE.find(x=>String(x.id)===String(id)); if(!c)return;
+  const ro=canWrite()?'':'disabled';
+  const campos=['categoria','executante','municipio','numero_contrato','numero_processo','tr','ta','data_inicio','data_vigencia','valor_global','gestor','setor','link_contrato','link_processo','link_ta','observacoes'];
+  const html=`<div class="grid2">${campos.map(k=>`<div><label>${k.replaceAll('_',' ')}</label><input id="ct_${k}" value="${esc(c[k]||'')}" ${ro}></div>`).join('')}</div>
+  ${canWrite()?`<button class="ok" onclick="salvarContrato('${c.id}')">Salvar contrato</button>`:''}<button class="btn2" onclick="fecharModal()">Fechar</button>`;
+  modal(`Contrato ${esc(c.numero_contrato||'')}`, html);
+}
+async function salvarContrato(id){
+  const c=CONTRATOS_CACHE.find(x=>String(x.id)===String(id)); if(!c)return;
+  ['categoria','executante','municipio','numero_contrato','numero_processo','tr','ta','data_inicio','data_vigencia','valor_global','gestor','setor','link_contrato','link_processo','link_ta','observacoes'].forEach(k=>c[k]=$('#ct_'+k).value);
+  try{await api('/api/contratos/'+id,{method:'PUT',body:JSON.stringify(c)});}catch(e){await api('/api/contratos',{method:'POST',body:JSON.stringify(CONTRATOS_CACHE)});}
+  fecharModal(); sigcDashboard();
+}
+function novoContratoSigc(){
+  const id=Date.now(); CONTRATOS_CACHE.unshift({id,categoria:'',executante:'',municipio:'',numero_contrato:'',numero_processo:'',tr:'',ta:'',data_inicio:'',data_vigencia:'',valor_global:'',gestor:'',setor:'',link_contrato:'',link_processo:'',link_ta:'',observacoes:''});
+  abrirContrato(id);
+}
