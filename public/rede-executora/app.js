@@ -5,12 +5,13 @@ const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const norm = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toUpperCase();
 const fmt = n => Number(n||0).toLocaleString('pt-BR');
 const tetoLabel = r => (r?.tetoMensal === null || r?.tetoMensal === undefined || r?.tetoMensal === '') ? 'Teto não definido' : fmt(r.tetoMensal);
+const valorContratoLabel = r => { const v = r?.valorGlobalContrato ?? r?.valor_global_contrato ?? ''; if(v === null || v === undefined || v === '') return 'Não informado'; const n = Number(String(v).replace(/[^0-9,.-]/g,'').replace('\.','').replace(',','.')); return Number.isFinite(n) && n>0 ? n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : String(v); };
 const monthNow = () => new Date().toISOString().slice(0,7);
 function competenciaLabel(v){ const [y,m]=String(v||monthNow()).split('-'); const nomes=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; return `${nomes[Number(m)-1]||m} de ${y}`; }
 let DATA = null, panel = null, selection = null, providerDrawer = null, panelHistory = [], currentQuery = '';
 
 const menu = [
-  {id:'servicos', label:'Serviços', hint:'Prestador, tipo de serviço e teto mensal'},
+  {id:'servicos', label:'Serviços', hint:'Prestador, tipo de serviço, valor global e teto físico mensal'},
   {id:'municipios', label:'Municípios', hint:'Consultar tetos por município'},
   {id:'panorama', label:'Panorama da Rede', hint:'Macro 1 e Macro 2'},
   {id:'relatorios', label:'Relatórios', hint:'Imprimir e exportar consulta'},
@@ -48,7 +49,7 @@ function statusContrato(row){ const d = daysUntil(row.contrato_fim); if(d === nu
 function naturezaLabel(n){ const x=norm(n); if(x.includes('PROPRIA')) return 'Rede própria'; if(x.includes('PACT')) return 'Pactuação'; if(x.includes('CONVEN')) return 'Convênio'; if(x.includes('GEST')) return 'Contrato de gestão'; if(x.includes('CRED')) return 'Credenciada'; return n ? cap(n) : 'Contratualizada'; }
 function naturezaTone(n){ const x=norm(n); if(x.includes('PROPRIA')) return 'ok'; if(x.includes('GEST')) return 'critical'; if(x.includes('PACT')) return 'warn'; return 'neutral'; }
 function cap(s){ return String(s||'').toLowerCase().replace(/(^|\s)\S/g, l=>l.toUpperCase()).replace('De ','de ').replace('Da ','da ').replace('Do ','do '); }
-function providerDetail(nome){ const rede = rowsByPrestador(nome); const procObjs=[]; rede.forEach(r=>(r.procedimentos||[]).forEach(p=>procObjs.push({...p, prestadorId:r.prestadorId, instrumentoId:r.instrumentoId, servico:r.servico, bloqueado:r.bloqueado}))); const procs = uniq(procObjs.map(p => `${p.codigo ? p.codigo+' - ' : ''}${p.nome}${p.oferta && p.oferta !== '-' ? ' • Oferta: '+p.oferta : ''}`)); const first = rede[0] || {}; return {nome, prestadorId:first.prestadorId, rede, municipio: uniq(rede.map(r=>r.municipio)).join(' • '), servicos: uniq(rede.map(r=>r.servico)), natureza:first.natureza, numero_contrato: uniq(rede.map(r=>r.numero_contrato)).join(' • '), contrato_fim: uniq(rede.map(r=>brDate(r.contrato_fim))).join(' • '), procedimentos: procs, procedimentoObjetos: procObjs, bloqueado: rede.some(r=>r.bloqueado||r.motivo_bloqueio), bloqueios: rede.filter(r=>r.bloqueado||r.motivo_bloqueio).map(r=>({servico:r.servico, municipio:r.municipio, motivo:r.motivo_bloqueio||'Prestador bloqueado'})), observacoes: uniq(rede.map(r=>r.observacao))}; }
+function providerDetail(nome){ const rede = rowsByPrestador(nome); const procObjs=[]; rede.forEach(r=>(r.procedimentos||[]).forEach(p=>procObjs.push({...p, prestadorId:r.prestadorId, instrumentoId:r.instrumentoId, servico:r.servico, bloqueado:r.bloqueado}))); const procs = uniq(procObjs.map(p => `${p.codigo ? p.codigo+' - ' : ''}${p.nome}${p.oferta && p.oferta !== '-' ? ' • Oferta: '+p.oferta : ''}`)); const first = rede[0] || {}; return {nome, prestadorId:first.prestadorId, rede, municipio: uniq(rede.map(r=>r.municipio)).join(' • '), servicos: uniq(rede.map(r=>r.servico)), natureza:first.natureza, numero_contrato: uniq(rede.map(r=>r.numero_contrato)).join(' • '), contrato_fim: uniq(rede.map(r=>brDate(r.contrato_fim))).join(' • '), procedimentos: procs, procedimentoObjetos: procObjs, bloqueado: rede.some(r=>r.bloqueado||r.motivo_bloqueio), bloqueios: rede.filter(r=>r.bloqueado||r.motivo_bloqueio).map(r=>({servico:r.servico, municipio:r.municipio, motivo:r.motivo_bloqueio||'Prestador bloqueado'})), observacoes: uniq(rede.map(r=>r.observacao)), valoresContrato: uniq(rede.map(r=>valorContratoLabel(r))).join(' • ')}; }
 function stats(){ const rows=flat(), procs=procFlat(); return {municipios:municipios().length, prestadores:prestadores().length, servicos:rows.length, procedimentos:procs.length, bloqueados:blockedServices().length, oferta:procs.reduce((s,p)=>s+(p.oferta==='-'?0:Number(p.oferta||0)),0)}; }
 function group(arr, key){ const o={}; arr.forEach(x=>{ const k=x[key]||'-'; o[k]=(o[k]||0)+1; }); return o; }
 
@@ -85,10 +86,10 @@ function drawerHtml(kind){
   let body = '';
   if(kind === 'servicos'){
     const items = servicos().filter(match);
-    body = drawerList('Buscar serviço', items, s => ({title:s, subtitle:'Prestador, tipo de serviço e teto mensal consolidado.', rows:rowsByServico(s), sourcePanel:'servicos'}));
+    body = drawerList('Buscar serviço', items, s => ({title:s, subtitle:'Prestador, tipo de serviço, valor global e teto físico mensal consolidado.', rows:rowsByServico(s), sourcePanel:'servicos'}));
   } else if(kind === 'municipios'){
     const items = municipios().filter(match);
-    body = drawerList('Buscar município', items, m => ({title:m, subtitle:'Prestadores, tipos de serviço e tetos mensais consolidados.', rows:rowsByMunicipio(m), sourcePanel:'municipios'}));
+    body = drawerList('Buscar município', items, m => ({title:m, subtitle:'Prestadores, tipos de serviço, valores globais e tetos físicos mensais consolidados.', rows:rowsByMunicipio(m), sourcePanel:'municipios'}));
   } else if(kind === 'panorama'){
     body = panoramaDrawer();
   } else if(kind === 'relatorios'){
@@ -111,7 +112,7 @@ function drawerHtml(kind){
 }
 
 function rowResumoTexto(r){
-  return `${r.prestador} • ${r.servico || '-'} • Teto mensal: ${tetoLabel(r)}`;
+  return `${r.prestador} • ${r.servico || '-'} • Valor global: ${valorContratoLabel(r)} • Teto físico mensal: ${tetoLabel(r)}`;
 }
 
 
@@ -126,7 +127,7 @@ function bindEvents(){
       const rows = rowsByMunicipio(data.municipio).sort((a,b)=>String(a.prestador||'').localeCompare(String(b.prestador||''),'pt-BR') || String(a.servico||'').localeCompare(String(b.servico||''),'pt-BR'));
       selectRows({
         title: data.municipio,
-        subtitle: 'Prestadores, tipos de serviço e tetos mensais consolidados.',
+        subtitle: 'Prestadores, tipos de serviço, valores globais e tetos físicos mensais consolidados.',
         rows,
         sourcePanel: 'municipios'
       });
@@ -157,7 +158,7 @@ function landingHtml(){
 function selectionHtml(){
   return `<div class="canvasHeader selectionHeaderWithActions"><div><span class="eyebrow">Consulta selecionada</span><h2>${esc(selection.title)}</h2><p>${esc(selection.subtitle)}</p></div><div class="selectionActions">${selection.sourcePanel ? `<button class="backButton" onclick="backToPanel()">← Voltar</button>`:''}<span class="miniBadge">${selection.rows.length} registro(s)</span>${selection.rows.length ? `<button class="backButton" onclick="downloadSelectionCSV()">⬇️ CSV</button><button class="backButton" onclick="printSelection()">🖨️ Relatório</button>`:''}<button class="iconButton" onclick="closeSelection()">×</button></div></div><div class="resultList compactResultList mainResultList">${selection.rows.length ? selection.rows.map(rowMiniHtml).join('') : '<p class="muted">Nenhum registro encontrado.</p>'}</div>`;
 }
-function rowMiniHtml(row){ return `<div class="resultItem plainRecord ${row.bloqueado?'resultItemBlocked':''}"><div class="resultInfo"><div class="providerTitleBlock"><button class="providerNameButton" onclick="openProvider('${enc(row.prestador)}')">${esc(row.prestador)}</button><div class="providerMunicipioLine"><span>Tipo de serviço:</span> <strong class="municipioStrong">${esc(row.servico||'-')}</strong></div></div><p><b>Teto Mensal:</b> ${esc(tetoLabel(row))}</p></div><div class="resultMeta resultMetaPlain"><span class="miniBadge">${esc(row.municipio||'')}</span><span class="miniBadge">Teto: ${esc(tetoLabel(row))}</span></div></div>`; }
+function rowMiniHtml(row){ return `<div class="resultItem plainRecord ${row.bloqueado?'resultItemBlocked':''}"><div class="resultInfo"><div class="providerTitleBlock"><button class="providerNameButton" onclick="openProvider('${enc(row.prestador)}')">${esc(row.prestador)}</button><div class="providerMunicipioLine"><span>Tipo de serviço:</span> <strong class="municipioStrong">${esc(row.servico||'-')}</strong></div></div><p><b>Valor Global do Contrato:</b> ${esc(valorContratoLabel(row))}<br><b>Teto Físico Mensal:</b> ${esc(tetoLabel(row))}</p></div><div class="resultMeta resultMetaPlain"><span class="miniBadge">${esc(row.municipio||'')}</span><span class="miniBadge">Valor: ${esc(valorContratoLabel(row))}</span><span class="miniBadge">Teto: ${esc(tetoLabel(row))}</span></div></div>`; }
 function match(s){ return !currentQuery || norm(s).includes(norm(currentQuery)); }
 function searchInput(ph){ return `<input class="cleanInput" id="drawerSearch" value="${esc(currentQuery)}" placeholder="${ph}" oninput="currentQuery=this.value; render()">`; }
 function drawerList(ph, items, makeSelection){ return `${searchInput(ph)}<div class="drawerBody">${items.length?items.map(item=>{ const sel=makeSelection(item); return `<button class="drawerOption" onclick='selectRows(${JSON.stringify(sel)})'><strong>${esc(item)}</strong><span>${sel.rows.length} registro(s)</span></button>`; }).join(''):'<div class="drawerNote">Nenhum item encontrado.</div>'}</div>`; }
@@ -179,7 +180,7 @@ function relatoriosDrawer(){
   const rows = flat();
   return `<div class="drawerBody">
     <div class="drawerNote"><b>Relatórios de consulta:</b> exibem apenas Prestador, Tipo de Serviço e Teto Mensal na competência ${esc(competenciaLabel(DATA?.competencia||monthNow()))}.</div>
-    <button class="drawerOption" onclick='selectRows(${JSON.stringify({title:'Tetos mensais da rede executora', subtitle:'Prestador, tipo de serviço e teto mensal consolidado.', rows:rows, sourcePanel:'relatorios'})})'><strong>Tetos mensais da rede executora</strong><span>${rows.length} registro(s) • impressão e CSV</span></button>
+    <button class="drawerOption" onclick='selectRows(${JSON.stringify({title:'Tetos mensais da rede executora', subtitle:'Prestador, tipo de serviço, valor global e teto físico mensal consolidado.', rows:rows, sourcePanel:'relatorios'})})'><strong>Tetos mensais da rede executora</strong><span>${rows.length} registro(s) • impressão e CSV</span></button>
     <button class="drawerOption" onclick="openGroupedReport('Prestadores por município','Prestador, serviço e teto mensal consolidado por município.', reportByMunicipio())"><strong>Prestadores por município</strong><span>${municipios().length} município(s)</span></button>
     <button class="drawerOption" onclick="openGroupedReport('Serviços ofertados','Prestadores e tetos mensais por tipo de serviço.', reportByServico())"><strong>Serviços ofertados</strong><span>${servicos().length} serviço(s)</span></button>
     <button class="drawerOption macroServiceCard" onclick="openGroupedReport('Panorama por macrorregião','Resumo dividido em Macro 1 e Macro 2.', reportByMacro())"><strong>Panorama por macrorregião</strong><span>Macro 1 e Macro 2</span></button>
@@ -224,13 +225,13 @@ function openGroupedReport(title, subtitle, grupos){
 }
 function downloadSelectionCSV(){
   if(!selection) return;
-  const header=['prestador','tipo_servico','teto_mensal'];
-  const lines=[header.join(';')].concat(selection.rows.map(r=>[r.prestador||'',r.servico||'',tetoLabel(r)].map(v=>String(v).replace(/;/g,',')).join(';')));
+  const header=['prestador','tipo_servico','valor_global_contrato','teto_fisico_mensal'];
+  const lines=[header.join(';')].concat(selection.rows.map(r=>[r.prestador||'',r.servico||'',valorContratoLabel(r),tetoLabel(r)].map(v=>String(v).replace(/;/g,',')).join(';')));
   const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(selection.title||'relatorio').toLowerCase().replace(/[^a-z0-9]+/gi,'-')+'.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 
-function providerDrawerHtml(nome){ const d=providerDetail(nome); return `<div class="drawerBackdrop drawerOpen" onclick="closeProvider(event)"><aside class="drawer providerDrawer" onclick="event.stopPropagation()"><div class="drawerHeader"><div><div class="drawerNavRow"><button class="backButton" onclick="closeProvider()">← Voltar</button></div><span class="eyebrow">Consulta do prestador</span><h2>${esc(d.nome)}</h2><div class="providerMunicipioLine drawerProviderMunicipio"><span>Município:</span> <strong class="municipioStrong">${esc(d.municipio)}</strong></div></div><button class="iconButton" onclick="closeProvider()">×</button></div><div class="drawerBody"><div class="drawerNote consultaOnly"><b>Painel apenas para consulta.</b><br>São exibidos somente prestador, tipo de serviço e teto mensal consolidado.</div><h3 class="drawerSectionTitle">Tetos mensais por tipo de serviço</h3>${d.rede.length?d.rede.map(r=>`<div class="procedureLine"><b>${esc(r.servico||'-')}</b><br>Teto Mensal: ${esc(tetoLabel(r))}</div>`).join(''):'<div class="drawerNote">Nenhum serviço encontrado para este prestador.</div>'}</div></aside></div>`; }
+function providerDrawerHtml(nome){ const d=providerDetail(nome); return `<div class="drawerBackdrop drawerOpen" onclick="closeProvider(event)"><aside class="drawer providerDrawer" onclick="event.stopPropagation()"><div class="drawerHeader"><div><div class="drawerNavRow"><button class="backButton" onclick="closeProvider()">← Voltar</button></div><span class="eyebrow">Consulta do prestador</span><h2>${esc(d.nome)}</h2><div class="providerMunicipioLine drawerProviderMunicipio"><span>Município:</span> <strong class="municipioStrong">${esc(d.municipio)}</strong></div></div><button class="iconButton" onclick="closeProvider()">×</button></div><div class="drawerBody"><div class="drawerNote consultaOnly"><b>Painel apenas para consulta.</b><br>São exibidos prestador, tipo de serviço, valor global do contrato e teto físico mensal consolidado.</div><h3 class="drawerSectionTitle">Contratos e tetos por tipo de serviço</h3>${d.rede.length?d.rede.map(r=>`<div class="procedureLine"><b>${esc(r.servico||'-')}</b><br>Valor Global do Contrato: ${esc(valorContratoLabel(r))}<br>Teto Físico Mensal: ${esc(tetoLabel(r))}</div>`).join(''):'<div class="drawerNote">Nenhum serviço encontrado para este prestador.</div>'}</div></aside></div>`; }
 function sendMapMunicipios(){ const frame=$('#sidebar-map-frame'); if(frame?.contentWindow) frame.contentWindow.postMessage({type:'RO_MUNICIPIOS_COM_OFERTA', municipios:municipios()}, '*'); }
 async function reload(){ try{ const mes=getMes(); DATA=await apiPublic(mes); panel=null; currentQuery=''; render(); }catch(e){ app.innerHTML=`<div class="emptyProfessional"><div><h2>Erro ao carregar</h2><p>${esc(e.message)}</p></div></div>`; } }
 function openPanel(p){ if(panel) panelHistory.push(panel); panel=p; currentQuery=''; render(); }
@@ -243,7 +244,7 @@ function openProvider(nome){ providerDrawer=dec(nome); currentQuery=''; render()
 function closeProvider(ev){ if(ev?.target && ev.target.closest && ev.target.closest('.drawer') && ev.currentTarget!==ev.target) return; providerDrawer=null; currentQuery=''; render(); }
 function printSelection(){ if(selection) openPrint(selection.title, selection.subtitle, selection.rows); }
 function printProvider(nome){ const d=providerDetail(dec(nome)); openPrint(`Rol de procedimentos • ${d.nome}`, `Relatório individual do prestador ${d.nome}.`, d.rede); }
-function openPrint(title, subtitle, rows){ const html = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:Arial,sans-serif;color:#0b3354;background:#f3f7fb;margin:0}.page{max-width:980px;margin:0 auto;padding:22px}.cover{background:linear-gradient(135deg,#0b3354,#1d6b91);color:#fff;border-radius:18px;padding:26px;margin-bottom:18px}.card{background:#fff;border:1px solid #d9e6ef;border-radius:16px;padding:16px;margin:0 0 10px;break-inside:avoid}h1{margin:12px 0 6px}.grid{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:8px}.head{font-weight:bold;color:#587086}</style></head><body><div class="page"><section class="cover"><b>REDE EXECUTORA • CREG/RO</b><h1>${esc(title)}</h1><p>${esc(subtitle)} • Competência ${esc(competenciaLabel(DATA?.competencia||monthNow()))} • Emitido em ${new Date().toLocaleString('pt-BR')}</p></section><section class="card"><div class="grid head"><div>Prestador</div><div>Tipo de serviço</div><div>Teto mensal</div></div>${rows.map(r=>`<div class="grid"><div>${esc(r.prestador)}</div><div>${esc(r.servico||'-')}</div><div>${esc(tetoLabel(r))}</div></div>`).join('')}</section></div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`; const w=window.open('','_blank'); w.document.open(); w.document.write(html); w.document.close(); }
+function openPrint(title, subtitle, rows){ const html = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:Arial,sans-serif;color:#0b3354;background:#f3f7fb;margin:0}.page{max-width:980px;margin:0 auto;padding:22px}.cover{background:linear-gradient(135deg,#0b3354,#1d6b91);color:#fff;border-radius:18px;padding:26px;margin-bottom:18px}.card{background:#fff;border:1px solid #d9e6ef;border-radius:16px;padding:16px;margin:0 0 10px;break-inside:avoid}h1{margin:12px 0 6px}.grid{display:grid;grid-template-columns:2fr 1.2fr 1.2fr 1fr;gap:8px}.head{font-weight:bold;color:#587086}</style></head><body><div class="page"><section class="cover"><b>REDE EXECUTORA • CREG/RO</b><h1>${esc(title)}</h1><p>${esc(subtitle)} • Competência ${esc(competenciaLabel(DATA?.competencia||monthNow()))} • Emitido em ${new Date().toLocaleString('pt-BR')}</p></section><section class="card"><div class="grid head"><div>Prestador</div><div>Tipo de serviço</div><div>Valor global</div><div>Teto físico mensal</div></div>${rows.map(r=>`<div class="grid"><div>${esc(r.prestador)}</div><div>${esc(r.servico||'-')}</div><div>${esc(valorContratoLabel(r))}</div><div>${esc(tetoLabel(r))}</div></div>`).join('')}</section></div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`; const w=window.open('','_blank'); w.document.open(); w.document.write(html); w.document.close(); }
 
 
 Object.assign(window, {

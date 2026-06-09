@@ -28,9 +28,9 @@
   },
   {
     "id": "u_1780930308656_ss6nkn",
-    "nome": "Consulta",
-    "login": "consulta",
-    "perfil": "CONSULTA",
+    "nome": "Gestão",
+    "login": "gestao",
+    "perfil": "GESTAO",
     "status": "ATIVO",
     "senha": "$2a$10$SZwgd3A6aAMEe2O6nAu/QutoiH28TG3WuhJQHn476Vt6vzxMUEPyW",
     "trocarSenha": false
