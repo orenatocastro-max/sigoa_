@@ -1044,3 +1044,11 @@ button { cursor: pointer; }
 /* v22.3 busca e mapa */
 .cleanInput{will-change:auto;}
 .mainMapFrame{touch-action:manipulation;}
+
+/* v22.5 - dados contratuais completos na Rede Executora */
+.contractServiceBox{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;margin:0 0 12px;box-shadow:0 8px 22px rgba(15,23,42,.04)}
+.contractServiceTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;color:#10233a;font-size:16px}
+.natureBadge{display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);padding:5px 9px;font-size:12px;font-weight:900;background:#f8fafc;color:#334155;white-space:nowrap}
+.nature-ok{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.nature-warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.nature-critical{background:#fef2f2;color:#991b1b;border-color:#fecaca}.nature-neutral{background:#f8fafc;color:#334155}
+.contractGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}.contractGrid div{border:1px solid var(--line);border-radius:13px;background:#fbfcfd;padding:10px}.contractGrid span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;font-weight:900}.contractGrid strong{display:block;margin-top:4px;color:#10233a}.contractObservation{border:1px dashed var(--line);border-radius:13px;background:#fbfcfd;padding:10px;color:#334155;line-height:1.4}.contractObservation b{color:#10233a}
+@media(max-width:680px){.contractGrid{grid-template-columns:1fr}.contractServiceTitle{align-items:flex-start;flex-direction:column}}
