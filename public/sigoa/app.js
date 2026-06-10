@@ -1,5 +1,6 @@
 let ME=null, PRESTADORES=[], SIGTAP=[], AUX={}, TETOS=[];
 const $=s=>document.querySelector(s); const app=$('#app');
+const norm = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toUpperCase();
 async function api(url,opt={}){const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opt}); if(!r.ok){let e=await r.json().catch(()=>({erro:r.statusText})); throw new Error(e.erro||'Erro')} return r.headers.get('content-type')?.includes('json')?r.json():r.text()}
 function fmt(d){return d?String(d).split('-').reverse().join('/'):''}
 function mesLabel(v){const [y,m]=String(v||'').slice(0,7).split('-');const nomes=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return y&&m?`${nomes[Number(m)-1]||m} de ${y}`:String(v||'')}
@@ -27,8 +28,8 @@ function renderPanoramaRede(){
   return `<div class="kpi-grid compact-kpis"><div class="kpi"><span>Unidades executantes</span><b>${p.unidades}</b></div><div class="kpi"><span>Serviços ativos</span><b>${p.servicos}</b></div><div class="kpi"><span>Municípios cobertos</span><b>${p.municipios}</b></div><div class="kpi green"><span>Contratos vigentes</span><b>${resumoContratos().vigentes}</b></div></div><div class="card compact-card"><div class="section-head"><div><h3>Panorama da Rede Assistencial</h3><p class="muted">Resumo por natureza da rede, sem poluir a tela.</p></div></div><table class="mini-table"><thead><tr><th>Natureza</th><th>Contratos</th><th>Serviços</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function showContratosPopupOnce(alertas){
-  if(!alertas?.length || sessionStorage.getItem('sigoa_alerta_contratos_visto')) return;
-  sessionStorage.setItem('sigoa_alerta_contratos_visto','1');
+  if(!alertas?.length || sessionStorage.getItem('sigoa_alerta_contratos_v22_4_visto')) return;
+  sessionStorage.setItem('sigoa_alerta_contratos_v22_4_visto','1');
   const linhas=alertas.map(x=>`<tr><td><b>${esc(x.p.nome)}</b></td><td>${esc(x.i.servico||'-')}</td><td>${fmt(x.i.vigenciaFim)}</td><td>${x.st.dias<0?Math.abs(x.st.dias)+' dias vencido':x.st.dias+' dias'}</td></tr>`).join('');
   openModal(`<div class="modal-head"><div><span class="eyebrow">Alerta contratual</span><h2>⚠️ Contratos vigentes próximos do vencimento</h2><p class="muted">Lista exibida apenas ao entrar. Depois consulte em Gestão de Contratos.</p></div><button class="ghost" onclick="closeModal()">Fechar</button></div><div class="table-wrap"><table><thead><tr><th>Prestador</th><th>Serviço</th><th>Fim da vigência</th><th>Situação</th></tr></thead><tbody>${linhas}</tbody></table></div><div class="modal-actions"><button onclick="closeModal();prestadores();setTimeout(()=>{document.querySelector('#fStatus').value='vencendo';filtrarContratos()},80)">Ver contratos a vencer</button><button class="ghost" onclick="closeModal()">Fechar</button></div>`);
 }
@@ -137,11 +138,20 @@ function renderEscalasLista(rows){
   const ordenadas=[...rows].sort((a,b)=>(ordem[a.status]||9)-(ordem[b.status]||9)||String(a.prestador).localeCompare(String(b.prestador),'pt-BR')||String(a.servico).localeCompare(String(b.servico),'pt-BR'));
   const linhas=ordenadas.map(e=>{
     const escala=(e.subescalas||[]).map(s=>`${s.preenchida?'✅':'❌'} ${esc(s.nome)}${s.preenchida?' - '+Number(s.quantidade||0).toLocaleString('pt-BR'):' - não lançada'}`).join('<br>') || '<span class="muted">Nenhuma escala configurada</span>';
-    return `<tr class="escala-row ${statusEscalaClass(e.status)}"><td><span class="tag ${statusEscalaClass(e.status)}">${statusEscalaLabel(e.status)}</span></td><td><button class="link-btn" onclick="modalContrato('${e.prestadorId}','${e.instrumentoId}')"><b>${esc(e.prestador)}</b></button></td><td>${esc(e.municipio||'')}</td><td>${esc(e.servico||'-')}</td><td>${escala}</td><td><b>${Number(e.totalOfertaMes||0).toLocaleString('pt-BR')}</b></td></tr>`;
+    const searchText=[e.status,e.prestador,e.municipio,e.servico,...((e.subescalas||[]).map(s=>s.nome))].join(' ');
+    return `<tr class="escala-row ${statusEscalaClass(e.status)}" data-search="${esc(searchText)}"><td><span class="tag ${statusEscalaClass(e.status)}">${statusEscalaLabel(e.status)}</span></td><td><button class="link-btn" onclick="modalContrato('${e.prestadorId}','${e.instrumentoId}')"><b>${esc(e.prestador)}</b></button></td><td>${esc(e.municipio||'')}</td><td>${esc(e.servico||'-')}</td><td>${escala}</td><td><b>${Number(e.totalOfertaMes||0).toLocaleString('pt-BR')}</b></td></tr>`;
   }).join('');
   return `<div class="card"><div class="section-head"><div><h3>Lista de escalas e subescalas</h3><p class="muted">Pendentes primeiro, depois parciais e completas. Sem cards.</p></div><input class="table-search" placeholder="Filtrar prestador, município ou serviço..." oninput="filtrarTabelaEscalas(this.value)"></div><div class="table-wrap"><table id="tblEscalas"><thead><tr><th>Status</th><th>Prestador</th><th>Município</th><th>Serviço</th><th>Escalas/Subescalas</th><th>Oferta Total</th></tr></thead><tbody>${linhas}</tbody></table></div></div>`;
 }
-function filtrarTabelaEscalas(q){q=norm(q);document.querySelectorAll('#tblEscalas tbody tr').forEach(tr=>{tr.style.display=!q||norm(tr.innerText).includes(q)?'':'none';});}
+function filtrarTabelaEscalas(q){
+  const termo=norm(q);
+  const rows=document.querySelectorAll('#tblEscalas tbody tr');
+  rows.forEach(tr=>{
+    const txt=norm(tr.getAttribute('data-search') || tr.textContent || tr.innerText || '');
+    tr.hidden = !!termo && !txt.includes(termo);
+    tr.style.display = tr.hidden ? 'none' : '';
+  });
+}
 
 async function dashboard(){
   await load();
@@ -153,7 +163,7 @@ async function dashboard(){
   const parciais=escalas.filter(e=>e.status==='PARCIAL').length;
   const pendentes=escalas.filter(e=>e.status==='PENDENTE').length;
   const rc=resumoContratos();
-  const alertas=listaContratos().filter(x=>['vencido','vencendo'].includes(x.st.cls)).slice(0,20);
+  const alertas=listaContratos().filter(x=>x.st.cls==='vencendo').slice(0,30);
   main(`<div class="hero"><div><span class="eyebrow">Painel executivo</span><h1>Painel Executivo</h1><p>Visão gerencial de contratos, rede assistencial e oferta mensal.</p></div><div class="hero-date">Competência<br><b>${mesLabel(mes)}</b></div></div>${renderPanoramaRede()}<div class="kpi-grid"><div class="kpi orange"><span>Vigentes a vencer</span><b>${rc.vencendo}</b></div><div class="kpi red"><span>Contratos vencidos</span><b>${rc.vencidos}</b></div><div class="kpi green"><span>Contratos vigentes</span><b>${rc.vigentes}</b></div><div class="kpi blue"><span>Valor global cadastrado</span><b>${rc.valor.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</b></div></div><div class="kpi-grid"><div class="kpi"><span>Oferta lançada no mês</span><b>${totalOferta.toLocaleString('pt-BR')}</b></div><div class="kpi green"><span>Escalas completas</span><b>${completas}</b></div><div class="kpi orange"><span>Escalas parciais</span><b>${parciais}</b></div><div class="kpi red"><span>Escalas pendentes</span><b>${pendentes}</b></div></div>${renderEscalasLista(escalas)}<div class="quick-actions"><button onclick="prestadores()">📄 Gestão de Contratos</button>${canWrite()?'<button onclick="oferta()">🗓️ Lançar escalas</button>':''}<button onclick="relatorios()">📊 Relatórios</button></div>`);
   setTimeout(()=>showContratosPopupOnce(alertas),250);
 }
