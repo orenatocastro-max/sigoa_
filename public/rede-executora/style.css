@@ -1041,3 +1041,6 @@ button { cursor: pointer; }
 
 /* v22 - busca direta por procedimento na home */
 .homeProcedureSearch{background:#fff;border:1px solid #d9e6ef;border-radius:18px;padding:16px;margin:16px 0;box-shadow:0 8px 24px #0d355f0a}.homeSearchRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.homeSearchRow button{white-space:nowrap}@media(max-width:700px){.homeSearchRow{grid-template-columns:1fr}}
+/* v22.3 busca e mapa */
+.cleanInput{will-change:auto;}
+.mainMapFrame{touch-action:manipulation;}

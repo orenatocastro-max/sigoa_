@@ -76,7 +76,7 @@
       }
     }
 
-    const map = L.map('map', { zoomControl: false, attributionControl: false, scrollWheelZoom: false }).setView([-10.9, -63.1], 6);
+    const map = L.map('map', { zoomControl: false, attributionControl: false, scrollWheelZoom: false, dragging: false, tap: false, doubleClickZoom: false }).setView([-10.9, -63.1], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
     const nameEl = document.getElementById('mapName');
     const url = 'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-11-mun.json';
@@ -128,15 +128,21 @@
             if (!selectedLayer) nameEl.textContent = 'Passe o mouse no município';
             else nameEl.textContent = selectedLayer.__municipioNome || nome;
           });
-          layer.on('click', () => {
+          function selecionarMunicipio(ev) {
+            if (ev && ev.originalEvent) {
+              L.DomEvent.stopPropagation(ev.originalEvent);
+              L.DomEvent.preventDefault(ev.originalEvent);
+            }
             if (selectedLayer && selectedLayer !== layer) geoLayer.resetStyle(selectedLayer);
             selectedLayer = layer;
             layer.__municipioNome = nome;
             layer.setStyle({ weight:3.5, fillOpacity: possuiOferta(nome) ? 1 : .32 });
             nameEl.textContent = nome;
             window.parent.postMessage({ type:'RO_MUNICIPIO_CLICK', municipio:nome }, '*');
-            // Não redimensiona nem altera o enquadramento ao clicar no município.
-          });
+            // Clique único: seleciona o município sem reposicionar ou exigir segundo clique.
+          }
+          layer.on('mousedown', selecionarMunicipio);
+          layer.on('click', selecionarMunicipio);
         }
       }).addTo(map);
       setTimeout(resetMapView, 80);
