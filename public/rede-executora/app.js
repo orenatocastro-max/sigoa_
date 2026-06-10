@@ -124,6 +124,9 @@ function bindEvents(){
   window.__redeExecutoraBindEvents = true;
   window.addEventListener('message', (event) => {
     const data = event.data || {};
+    if(data.type === 'RO_MAP_READY'){
+      sendMapMunicipios();
+    }
     if(data.type === 'RO_MUNICIPIO_CLICK' && data.municipio){
       const rows = rowsByMunicipio(data.municipio).sort((a,b)=>String(a.prestador||'').localeCompare(String(b.prestador||''),'pt-BR') || String(a.servico||'').localeCompare(String(b.servico||''),'pt-BR'));
       selectRows({
@@ -147,21 +150,44 @@ function render(){
     ${panel ? drawerHtml(panel) : ''}${providerDrawer ? providerDrawerHtml(providerDrawer) : ''}
   </div>`;
   bindEvents();
-  sendMapMunicipios();
-}
+  wireMapFrame();
+  setTimeout(sendMapMunicipios, 120);
+} 
 function workspaceHtml(){
   return `<section class="workAreaOnly"><div class="selectionPanel mainSelectionPanel">${!selection ? landingHtml() : selectionHtml()}</div></section>`;
 }
+function pesquisarProcedimentoHome(){ const q=document.getElementById('homeProcBusca')?.value||''; panel='procedimentos'; currentQuery=q; selection=null; render(); }
 function landingHtml(){
   const s=stats();
-  return `<div class="homeDashboard"><section class="mainMapCard"><div class="mainMapHeader"><div><span class="eyebrow">Mapa de Rondônia</span><h2>Rede Executora por município</h2><p>Clique nos municípios em destaque para consultar a oferta disponível.</p></div><span class="miniBadge">Competência: ${esc(competenciaLabel(DATA?.competencia||monthNow()))}</span></div><iframe id="sidebar-map-frame" class="mainMapFrame" src="/mapa-ro.html" title="Mapa interativo de Rondônia"></iframe><div class="mapLoading mapLoadingCenter">Municípios com dados do SIGOA: ${municipios().length}</div></section><section class="homeStats"><div class="fieldPill"><span>Prestadores</span><strong>${fmt(s.prestadores)}</strong></div><div class="fieldPill"><span>Tipos de serviço</span><strong>${fmt(s.servicos)}</strong></div><div class="fieldPill"><span>Municípios</span><strong>${fmt(s.municipios)}</strong></div><div class="fieldPill"><span>Com teto definido</span><strong>${fmt(flat().filter(r=>r.tetoMensal!==null&&r.tetoMensal!==undefined).length)}</strong></div></section><p class="muted homeHint">Selecione uma consulta no menu lateral ou clique em um município no mapa.</p><p class="developerFooter">Desenvolvido por: Renato Castro • Versão consulta integrada ao SIGOA</p></div>`;
+  return `<div class="homeDashboard"><section class="mainMapCard"><div class="mainMapHeader"><div><span class="eyebrow">Mapa de Rondônia</span><h2>Rede Executora por município</h2><p>Clique nos municípios em destaque para consultar a oferta disponível.</p></div><span class="miniBadge">Competência: ${esc(competenciaLabel(DATA?.competencia||monthNow()))}</span></div><iframe id="sidebar-map-frame" class="mainMapFrame" src="/mapa-ro.html" title="Mapa interativo de Rondônia"></iframe><div class="mapLoading mapLoadingCenter">Municípios com dados do SIGOA: ${municipios().length}</div></section><section class="homeStats"><div class="fieldPill"><span>Prestadores</span><strong>${fmt(s.prestadores)}</strong></div><div class="fieldPill"><span>Tipos de serviço</span><strong>${fmt(s.servicos)}</strong></div><div class="fieldPill"><span>Municípios</span><strong>${fmt(s.municipios)}</strong></div><div class="fieldPill"><span>Com teto definido</span><strong>${fmt(flat().filter(r=>r.tetoMensal!==null&&r.tetoMensal!==undefined).length)}</strong></div></section><div class="homeProcedureSearch"><label class="eyebrow">Busca por procedimento</label><div class="homeSearchRow"><input id="homeProcBusca" class="cleanInput" placeholder="Digite o nome ou código do procedimento..." onkeydown="if(event.key==='Enter')pesquisarProcedimentoHome()"><button onclick="pesquisarProcedimentoHome()">Buscar unidades</button></div><p class="muted">Digite, por exemplo: Colecistectomia, Hernioplastia ou 0407030034.</p></div><p class="muted homeHint">Selecione uma consulta no menu lateral ou clique em um município no mapa.</p><p class="developerFooter">Desenvolvido por: Renato Castro • Versão consulta integrada ao SIGOA</p></div>`;
 }
 function selectionHtml(){
   return `<div class="canvasHeader selectionHeaderWithActions"><div><span class="eyebrow">Consulta selecionada</span><h2>${esc(selection.title)}</h2><p>${esc(selection.subtitle)}</p></div><div class="selectionActions">${selection.sourcePanel ? `<button class="backButton" onclick="backToPanel()">← Voltar</button>`:''}<span class="miniBadge">${selection.rows.length} registro(s)</span>${selection.rows.length ? `<button class="backButton" onclick="downloadSelectionCSV()">⬇️ CSV</button><button class="backButton" onclick="printSelection()">🖨️ Relatório</button>`:''}<button class="iconButton" onclick="closeSelection()">×</button></div></div><div class="resultList compactResultList mainResultList">${selection.rows.length ? selection.rows.map(rowMiniHtml).join('') : '<p class="muted">Nenhum registro encontrado.</p>'}</div>`;
 }
 function rowMiniHtml(row){ return `<div class="resultItem plainRecord ${row.bloqueado?'resultItemBlocked':''}"><div class="resultInfo"><div class="providerTitleBlock"><button class="providerNameButton" onclick="openProvider('${enc(row.prestador)}')">${esc(row.prestador)}</button><div class="providerMunicipioLine"><span>Tipo de serviço:</span> <strong class="municipioStrong">${esc(row.servico||'-')}</strong></div></div><p><b>Valor Global do Contrato:</b> ${esc(valorContratoLabel(row))}<br><b>Teto Físico Mensal:</b> ${esc(tetoLabel(row))}</p></div><div class="resultMeta resultMetaPlain"><span class="miniBadge">${esc(row.municipio||'')}</span><span class="miniBadge">Valor: ${esc(valorContratoLabel(row))}</span><span class="miniBadge">Teto: ${esc(tetoLabel(row))}</span></div></div>`; }
 function match(s){ return !currentQuery || norm(s).includes(norm(currentQuery)); }
-function searchInput(ph){ return `<input class="cleanInput" id="drawerSearch" value="${esc(currentQuery)}" placeholder="${ph}" oninput="currentQuery=this.value; render()">`; }
+let drawerSearchTimer = null;
+function handleDrawerSearch(value){
+  currentQuery = value;
+  clearTimeout(drawerSearchTimer);
+  drawerSearchTimer = setTimeout(refreshDrawerOnly, 180);
+}
+function refreshDrawerOnly(){
+  if(!panel) { render(); return; }
+  const existing = document.querySelector('.drawerBackdrop.drawerOpen');
+  if(existing){
+    existing.outerHTML = drawerHtml(panel);
+    const input = document.getElementById('drawerSearch');
+    if(input){
+      input.focus();
+      const len = input.value.length;
+      input.setSelectionRange(len, len);
+    }
+  } else {
+    render();
+  }
+}
+function searchInput(ph){ return `<input class="cleanInput" id="drawerSearch" value="${esc(currentQuery)}" placeholder="${ph}" oninput="handleDrawerSearch(this.value)">`; }
 function drawerList(ph, items, makeSelection){ return `${searchInput(ph)}<div class="drawerBody">${items.length?items.map(item=>{ const sel=makeSelection(item); return `<button class="drawerOption" onclick='selectRows(${JSON.stringify(sel)})'><strong>${esc(item)}</strong><span>${sel.rows.length} registro(s)</span></button>`; }).join(''):'<div class="drawerNote">Nenhum item encontrado.</div>'}</div>`; }
 function procedimentosDrawer(){ const procs=allProcedimentos().filter(p=>match(`${p.codigo} ${p.nome}`)).slice(0,80); const provs=prestadores().filter(match).slice(0,80); return `${searchInput('Buscar procedimento, código ou prestador')}<div class="drawerBody"><h3 class="drawerSectionTitle">Procedimentos</h3>${procs.map(p=>{ const rows=rowsByProcedimento(`${p.codigo} ${p.nome}`); return `<button class="drawerOption procedureOption" onclick='selectRows(${JSON.stringify({title:p.nome, subtitle:`Código ${p.codigo||'-'} • prestadores vinculados`, rows, sourcePanel:'procedimentos'})})'><strong>${esc(p.nome)}</strong><span>${esc(p.codigo||'-')} • ${rows.length} prestador(es)</span></button>`; }).join('')||'<div class="drawerNote">Nenhum procedimento cadastrado na competência/base atual.</div>'}<h3 class="drawerSectionTitle">Prestadores</h3>${provs.map(p=>`<button class="drawerOption" onclick="openProvider('${enc(p)}')"><strong>${esc(p)}</strong><span>Abrir rol de procedimentos do prestador</span></button>`).join('')}</div>`; }
 function vigenciasDrawer(){ const rows=flat().filter(r=>r.contrato_fim).sort((a,b)=>(daysUntil(a.contrato_fim)??99999)-(daysUntil(b.contrato_fim)??99999)); const critical=rows.filter(r=>{const d=daysUntil(r.contrato_fim); return typeof d==='number' && d<=60;}); return `<div class="drawerBody"><div class="drawerNote"><b>Atenção:</b> lista prioriza contratos vencidos ou com até 60 dias para vencimento.</div>${(currentQuery?rows.filter(r=>match(`${r.prestador} ${r.municipio} ${r.servico} ${r.numero_contrato}`)):critical).map(r=>`<button class="drawerOption ${daysUntil(r.contrato_fim)<0?'danger':daysUntil(r.contrato_fim)<=60?'attention':''}" onclick='selectRows(${JSON.stringify({title:r.prestador, subtitle:`Vigência do serviço ${r.servico}`, rows:[r], sourcePanel:'vigencias'})})'><strong>${esc(r.prestador)}</strong><span>${esc(r.municipio)} • ${esc(r.servico)} • ${esc(r.numero_contrato||'-')} • ${esc(brDate(r.contrato_fim))} • ${esc(statusContrato(r).text)}</span></button>`).join('')||'<div class="drawerNote">Nenhuma vigência crítica encontrada.</div>'}</div>`; }
@@ -234,7 +260,20 @@ function downloadSelectionCSV(){
 
 function providerDrawerHtml(nome){ const d=providerDetail(nome); return `<div class="drawerBackdrop drawerOpen" onclick="closeProvider(event)"><aside class="drawer providerDrawer" onclick="event.stopPropagation()"><div class="drawerHeader"><div><div class="drawerNavRow"><button class="backButton" onclick="closeProvider()">← Voltar</button></div><span class="eyebrow">Consulta do prestador</span><h2>${esc(d.nome)}</h2><div class="providerMunicipioLine drawerProviderMunicipio"><span>Município:</span> <strong class="municipioStrong">${esc(d.municipio)}</strong></div></div><button class="iconButton" onclick="closeProvider()">×</button></div><div class="drawerBody"><div class="drawerNote consultaOnly"><b>Painel apenas para consulta.</b><br>São exibidos prestador, tipo de serviço, valor global do contrato e teto físico mensal consolidado.</div><h3 class="drawerSectionTitle">Contratos e tetos por tipo de serviço</h3>${d.rede.length?d.rede.map(r=>`<div class="procedureLine"><b>${esc(r.servico||'-')}</b><br>Valor Global do Contrato: ${esc(valorContratoLabel(r))}<br>Teto Físico Mensal: ${esc(tetoLabel(r))}</div>`).join(''):'<div class="drawerNote">Nenhum serviço encontrado para este prestador.</div>'}<h3 class="drawerSectionTitle">Rol de procedimentos da Rede Executora (${d.procedimentoObjetos.length})</h3>${d.procedimentoObjetos.length?`<input class="cleanInput" placeholder="Pesquisar no rol de procedimentos..." oninput="filtrarRolPrestador(this.value)"><div class="procedureTable"><table id="tblRolPrestador"><thead><tr><th>Código</th><th>Procedimento</th><th>Serviço</th></tr></thead><tbody>${d.procedimentoObjetos.sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(pr=>`<tr><td>${esc(pr.codigo||'')}</td><td>${esc(pr.nome||'')}</td><td>${esc(pr.servico||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="drawerNote">Nenhum procedimento cadastrado para este prestador.</div>'}</div></aside></div>`; }
 function filtrarRolPrestador(q){q=norm(q);document.querySelectorAll('#tblRolPrestador tbody tr').forEach(tr=>{tr.style.display=!q||norm(tr.innerText).includes(q)?'':'none';});}
-function sendMapMunicipios(){ const frame=$('#sidebar-map-frame'); if(frame?.contentWindow) frame.contentWindow.postMessage({type:'RO_MUNICIPIOS_COM_OFERTA', municipios:municipios()}, '*'); }
+function wireMapFrame(){
+  const frame = $('#sidebar-map-frame');
+  if(!frame || frame.dataset.wired === '1') return;
+  frame.dataset.wired = '1';
+  frame.addEventListener('load', () => setTimeout(sendMapMunicipios, 150));
+}
+function sendMapMunicipios(){
+  const frame=$('#sidebar-map-frame');
+  if(frame?.contentWindow){
+    const lista = municipios();
+    frame.contentWindow.postMessage({type:'RO_MUNICIPIOS_COM_OFERTA', municipios:lista}, '*');
+    setTimeout(()=>frame.contentWindow?.postMessage({type:'RO_MUNICIPIOS_COM_OFERTA', municipios:lista}, '*'), 600);
+  }
+}
 async function reload(){ try{ const mes=getMes(); DATA=await apiPublic(mes); panel=null; currentQuery=''; render(); }catch(e){ app.innerHTML=`<div class="emptyProfessional"><div><h2>Erro ao carregar</h2><p>${esc(e.message)}</p></div></div>`; } }
 function openPanel(p){ if(panel) panelHistory.push(panel); panel=p; currentQuery=''; render(); }
 function closePanel(ev){ if(ev?.target && ev.target.closest && ev.target.closest('.drawer') && ev.currentTarget!==ev.target) return; panel=null; panelHistory=[]; currentQuery=''; render(); }
@@ -252,7 +291,7 @@ function openPrint(title, subtitle, rows){ const html = `<!doctype html><html><h
 Object.assign(window, {
   openPanel, closePanel, backPanel, selectRows, backToPanel, closeSelection,
   openProvider, closeProvider, printSelection, printProvider, downloadSelectionCSV,
-  openGroupedReport
+  openGroupedReport, handleDrawerSearch
 });
 
 reload();

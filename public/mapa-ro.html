@@ -90,7 +90,7 @@
         color:'#ffffff',
         weight:1.2,
         fillColor: getColor(n),
-        fillOpacity: temOferta ? .80 : .30
+        fillOpacity: temOferta ? .92 : .14
       };
     }
     function resetMapView() {
@@ -120,7 +120,7 @@
         onEachFeature: (feature, layer) => {
           const nome = feature?.properties?.name || feature?.properties?.NM_MUN || 'MUNICÍPIO';
           layer.on('mouseover', () => {
-            if (layer !== selectedLayer) layer.setStyle({ weight:3, fillOpacity: possuiOferta(nome) ? .92 : .45 });
+            if (layer !== selectedLayer) layer.setStyle({ weight:3, fillOpacity: possuiOferta(nome) ? .98 : .28 });
             nameEl.textContent = nome;
           });
           layer.on('mouseout', () => {
@@ -132,7 +132,7 @@
             if (selectedLayer && selectedLayer !== layer) geoLayer.resetStyle(selectedLayer);
             selectedLayer = layer;
             layer.__municipioNome = nome;
-            layer.setStyle({ weight:3.5, fillOpacity: possuiOferta(nome) ? .95 : .50 });
+            layer.setStyle({ weight:3.5, fillOpacity: possuiOferta(nome) ? 1 : .32 });
             nameEl.textContent = nome;
             window.parent.postMessage({ type:'RO_MUNICIPIO_CLICK', municipio:nome }, '*');
             // Não redimensiona nem altera o enquadramento ao clicar no município.
@@ -140,6 +140,7 @@
         }
       }).addTo(map);
       setTimeout(resetMapView, 80);
+      setTimeout(() => window.parent.postMessage({ type:'RO_MAP_READY' }, '*'), 120);
     }).catch(() => {
       nameEl.textContent = 'Não foi possível carregar a malha. Verifique a internet.';
     });

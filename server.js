@@ -323,7 +323,7 @@ app.get('/api/escalas',auth,(req,res)=>{
   const norm=s=>String(s||'').replace(/\D/g,'');
   const rows=[];
   ps.forEach(p=>{
-    (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{
+    (p.instrumentos||[]).filter(i=>i.ativo!==false && i.modoLancamento!=='APENAS_CONTRATUAL').forEach(i=>{
       const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id);
       let baseSubs=(i.subescalas||[]).filter(s=>s.ativo!==false);
       if(!baseSubs.length) baseSubs=[{id:'__principal',nome:nomeEscalaPadrao(i.servico), observacao:'Escala principal gerada automaticamente quando não há subescalas cadastradas.'}];
