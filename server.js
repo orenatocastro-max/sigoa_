@@ -260,6 +260,19 @@ app.put('/api/tetos/:id',roles('ADMINISTRADOR'),(req,res)=>{
 });
 
 
+
+function nomeEscalaPadrao(servico){
+  const s=String(servico||'').toUpperCase();
+  if(s.includes('DIAGNOSTICO')&&s.includes('RM')) return 'Ressonância Magnética';
+  if(s.includes('RESSON')) return 'Ressonância Magnética';
+  if(s.includes('DIAGNOSTICO')&&s.includes('TC')) return 'Tomografia Computadorizada';
+  if(s.includes('TOMOG')) return 'Tomografia Computadorizada';
+  if(s.includes('MAMOG')) return 'Mamografia';
+  if(s.includes('ULTRASS')||s.includes('ULTRA-SON')||s.includes('USG')) return 'Ultrassonografia';
+  if(s.includes('ELETROENCEF')) return 'Eletroencefalograma';
+  return String(servico||'Escala/Oferta principal').replace(/^DIAGN[ÓO]STICO:\s*/i,'').trim() || 'Escala/Oferta principal';
+}
+
 app.get('/api/escalas',auth,(req,res)=>{
   const mes=String(req.query.mes||new Date().toISOString().slice(0,7));
   const ps=filtrarPrestadoresPorUsuario(req, read('prestadores.json',[]));
@@ -272,7 +285,7 @@ app.get('/api/escalas',auth,(req,res)=>{
     (p.instrumentos||[]).filter(i=>i.ativo!==false).forEach(i=>{
       const esc=escalas.find(e=>e.prestadorId===p.id && (e.instrumentoId||'')===i.id);
       let baseSubs=(i.subescalas||[]).filter(s=>s.ativo!==false);
-      if(!baseSubs.length && i.modoLancamento!=='ESCALA_SUBESCALA') baseSubs=[{id:'__principal',nome:i.servico||'Escala/Oferta principal'}];
+      if(!baseSubs.length) baseSubs=[{id:'__principal',nome:nomeEscalaPadrao(i.servico), observacao:'Escala principal gerada automaticamente quando não há subescalas cadastradas.'}];
       const total=ofs.filter(o=>o.prestadorId===p.id && o.instrumentoId===i.id).reduce((s,o)=>s+Number(o.quantidade||0),0);
       const subescalas=baseSubs.map(sub=>{
         const codigo=sub.id||sub.nome;

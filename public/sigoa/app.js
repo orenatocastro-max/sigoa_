@@ -38,16 +38,32 @@ async function load(){
 async function logout(){await api('/api/logout',{method:'POST'}); ME=null; login()}
 function main(html){$('#main').innerHTML=html}
 function statusEscalaLabel(st){
-  return st==='COMPLETA'?'✅ Completa':st==='PARCIAL'?'⚠️ Parcial':st==='PENDENTE'?'❌ Pendente':'⚪ Sem subescala';
+  return st==='COMPLETA'?'✅ Completa':st==='PARCIAL'?'⚠️ Parcial':st==='PENDENTE'?'❌ Pendente':'⚪ Sem escala';
+}
+function statusEscalaClass(st){
+  return st==='COMPLETA'?'ok':st==='PARCIAL'?'warn':st==='PENDENTE'?'bad':'muted';
+}
+function nomeEscalaPadrao(servico){
+  const s=String(servico||'').toUpperCase();
+  if(s.includes('DIAGNOSTICO')&&s.includes('RM')) return 'Ressonância Magnética';
+  if(s.includes('RESSON')) return 'Ressonância Magnética';
+  if(s.includes('DIAGNOSTICO')&&s.includes('TC')) return 'Tomografia Computadorizada';
+  if(s.includes('TOMOG')) return 'Tomografia Computadorizada';
+  if(s.includes('MAMOG')) return 'Mamografia';
+  if(s.includes('ULTRASS')||s.includes('ULTRA-SON')||s.includes('USG')) return 'Ultrassonografia';
+  if(s.includes('ELETROENCEF')) return 'Eletroencefalograma';
+  return String(servico||'Escala/Oferta principal').replace(/^DIAGN[ÓO]STICO:\s*/i,'').trim() || 'Escala/Oferta principal';
 }
 function renderSubescalas(e){
   const subs=e.subescalas||[];
-  if(!subs.length) return '<div class="muted">Nenhuma subescala/procedimento cadastrado para este serviço.</div>';
-  return `<div class="subesc-list">${subs.map(s=>`<div class="subesc-item"><span>${s.preenchida?'✅':'❌'} <b>${esc(s.nome)}</b>${s.codigo?` <span class="muted">${esc(s.codigo)}</span>`:''}</span><span>${s.preenchida?Number(s.quantidade||0).toLocaleString('pt-BR'):'não lançada'}</span></div>`).join('')}</div>`;
+  if(!subs.length) return '<div class="muted">Nenhuma escala configurada para este serviço.</div>';
+  return `<div class="subesc-list always-open">${subs.map(s=>`<div class="subesc-item ${s.preenchida?'done':'missing'}"><span>${s.preenchida?'✅':'❌'} <b>${esc(s.nome)}</b>${s.observacao?` <span class="muted">${esc(s.observacao)}</span>`:''}</span><span>${s.preenchida?Number(s.quantidade||0).toLocaleString('pt-BR'):'não lançada'}</span></div>`).join('')}</div>`;
 }
 function renderEscalasCards(rows){
-  if(!rows.length) return '<div class="card">Nenhuma escala encontrada para a competência.</div>';
-  return rows.map(e=>`<details class="card escala-card" ${e.status!=='COMPLETA'?'open':''}><summary><b>${esc(e.prestador)}</b> — ${esc(e.servico||'-')} <span class="tag">${statusEscalaLabel(e.status)}</span><br><span class="muted">${esc(e.municipio||'')} • ${e.subescalasPreenchidas||0}/${e.totalSubescalas||0} subescalas preenchidas • Total: ${Number(e.totalOfertaMes||0).toLocaleString('pt-BR')}</span></summary>${renderSubescalas(e)}</details>`).join('');
+  if(!rows.length) return '<div class="card"><p class="muted">Nenhuma escala monitorada para esta competência.</p></div>';
+  const ordem={PENDENTE:1,PARCIAL:2,COMPLETA:3,SEM_SUBESCALA:4};
+  const ordenadas=[...rows].sort((a,b)=>(ordem[a.status]||9)-(ordem[b.status]||9)||String(a.prestador).localeCompare(String(b.prestador),'pt-BR')||String(a.servico).localeCompare(String(b.servico),'pt-BR'));
+  return `<div class="escala-grid">${ordenadas.map(e=>`<div class="card escala-card ${statusEscalaClass(e.status)}"><div class="escala-head"><div><b>${esc(e.prestador)}</b><br><span>${esc(e.servico||'-')}</span></div><span class="tag ${statusEscalaClass(e.status)}">${statusEscalaLabel(e.status)}</span></div><p class="muted">${esc(e.municipio||'')} • ${e.subescalasPreenchidas||0}/${e.totalSubescalas||0} escalas preenchidas</p>${renderSubescalas(e)}<div class="oferta-total"><span>Oferta Total</span><b>${Number(e.totalOfertaMes||0).toLocaleString('pt-BR')}</b></div></div>`).join('')}</div>`;
 }
 async function dashboard(){
   await load();
@@ -132,7 +148,7 @@ async function carregarProcedimentosOferta(){
   const totalServico=ofertas.filter(x=>x.prestadorId===p.id&&x.instrumentoId===i.id).reduce((s,x)=>s+Number(x.quantidade||0),0);
   const tetoBox=tetoServ?`<div class="card teto-box"><b>Teto físico mensal do serviço</b><h2>${Number(tetoServ.quantidade||0).toLocaleString('pt-BR')}</h2><p class="muted">Lançado: ${totalServico.toLocaleString('pt-BR')} • Diferença: ${(totalServico-Number(tetoServ.quantidade||0)).toLocaleString('pt-BR')}</p>${tetoServ.observacao?`<p><b>Observação:</b> ${esc(tetoServ.observacao)}</p>`:''}</div>`:`<div class="card teto-box"><b>Teto físico mensal</b><p class="muted">Nenhum teto físico mensal definido para este prestador/tipo de serviço.</p></div>`;
   let base=(i.subescalas||[]).filter(s=>s.ativo!==false).sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR'));
-  if(!base.length && i.modoLancamento!=='ESCALA_SUBESCALA') base=[{id:'__principal',nome:i.servico||'Escala/Oferta principal'}];
+  if(!base.length) base=[{id:'__principal',nome:nomeEscalaPadrao(i.servico)}];
   const html=base.map(sub=>{const codigo=sub.id||sub.nome; const o=ofertas.find(x=>x.prestadorId===p.id&&x.instrumentoId===i.id&&String(x.codigo||'')===String(codigo)); return `<div class="proced-row"><div><b>${esc(sub.nome)}</b><br><span class="muted">${i.modoLancamento==='ESCALA_SUBESCALA'?'Subescala':'Quantitativo direto'}${sub.observacao?` • ${esc(sub.observacao)}`:''}</span></div><input class="qtd" data-codigo="${esc(codigo)}" data-nome="${esc(sub.nome)}" type="number" min="0" value="${o?Number(o.quantidade||0):0}"><input class="obs" data-codigo="${esc(codigo)}" placeholder="Observação" value="${esc(o?.observacao||'')}"></div>`}).join('')||'<p class="muted">Nenhuma subescala cadastrada. Acione a gestão de contratos para configurar as subescalas deste serviço.</p>';
   $('#ofLista').innerHTML=`${tetoBox}<div class="card"><h3>${esc(i.servico||'Serviço')}</h3><p class="muted"><b>Prestador:</b> ${esc(p.nome||'')} | <b>Contrato:</b> ${esc(i.numero||'-')} | <b>Modo:</b> ${i.modoLancamento==='ESCALA_SUBESCALA'?'Escala/Subescala':'Quantitativo direto'}</p>${html}<label>Justificativa/observação geral</label><input id="just" placeholder="Opcional"><button onclick="salvarOferta()">Salvar escala/oferta</button></div><div class="card"><p class="muted">O rol de procedimentos contratual é cadastrado pelo Administrador e aparece na Rede Executora. O operador lança apenas escalas/subescalas.</p></div>`;
 }
@@ -216,7 +232,7 @@ async function carregarEscalasMes(){
   const mes=$('#escMes')?.value||new Date().toISOString().slice(0,7);
   const rows=await api('/api/escalas?mes='+mes);
   const completas=rows.filter(x=>x.status==='COMPLETA').length, parciais=rows.filter(x=>x.status==='PARCIAL').length, pendentes=rows.filter(x=>x.status==='PENDENTE').length;
-  $('#escBox').innerHTML=`<div class="grid"><div class="card"><b>✅ Completas</b><h2>${completas}</h2></div><div class="card"><b>⚠️ Parciais</b><h2>${parciais}</h2></div><div class="card"><b>❌ Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total monitorado</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mesLabel(mes)}</h3><p class="muted">Clique em cada prestador/serviço para ver as subescalas.</p></div>${renderEscalasCards(rows)}`
+  $('#escBox').innerHTML=`<div class="grid"><div class="card"><b>✅ Completas</b><h2>${completas}</h2></div><div class="card"><b>⚠️ Parciais</b><h2>${parciais}</h2></div><div class="card"><b>❌ Pendentes</b><h2>${pendentes}</h2></div><div class="card"><b>Total monitorado</b><h2>${rows.length}</h2></div></div><div class="card"><h3>Situação das escalas - ${mesLabel(mes)}</h3><p class="muted">As subescalas aparecem diretamente, sem precisar clicar. Pendências aparecem primeiro.</p></div>${renderEscalasCards(rows)}`
 }
 async function relEscalasLancadas(){const p=periodo();const rows=await api('/api/escalas?mes='+p.fim);const out=rows.map(e=>({Prestador:e.prestador,Serviço:e.servico||'-',Município:e.municipio,Status:statusEscalaLabel(e.status),Subescalas:`${e.subescalasPreenchidas||0}/${e.totalSubescalas||0}`,Operador:e.operador||'-',Total:e.totalOfertaMes||0}));setRel('Escalas por subescalas',`<div class="card"><p>Mostra se cada prestador/serviço está completo, parcial ou pendente na competência ${mesLabel(p.fim)}.</p>${tableRows(out)}</div>${renderEscalasCards(rows)}`,out)}
 
