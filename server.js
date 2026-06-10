@@ -91,7 +91,7 @@ function bootstrap(){
     });
     write('prestadores.json', prestadores);
   }
-  ['ofertas.json','auditoria.json','competencias.json','escalas.json','tetos.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
+  ['ofertas.json','auditoria.json','competencias.json','escalas.json','tetos.json','importacoes_sigtap.json'].forEach(n=>{ if(!read(n, null)) write(n,[]); });
   syncAuxiliares();
 }
 function normNatureza(n){ n=String(n||'').toUpperCase(); if(n.includes('PROPRIA')) return 'REDE PROPRIA'; if(n.includes('PACT')) return 'PACTUACAO'; if(n.includes('CONVEN')) return 'CONVENIO'; if(n.includes('GESTAO')) return 'CONTRATO DE GESTAO'; return n||'CONTRATUALIZADA'; }
@@ -133,6 +133,24 @@ function audit(req, acao, entidade, id, detalhes){
   write('auditoria.json', arr);
 }
 function diff(oldObj,newObj,campos){ const out=[]; campos.forEach(c=>{ const a=oldObj?.[c]??''; const b=newObj?.[c]??''; if(JSON.stringify(a)!==JSON.stringify(b)) out.push({campo:c, anterior:a, novo:b}); }); return out; }
+
+function parseSigtapTxt(text, grupoPadrao='IMPORTADO', subgrupoPadrao='TXT'){
+  const rows=[]; const errors=[]; const seen=new Set();
+  String(text||'').split(/\r?\n/).forEach((raw,idx)=>{
+    const line=String(raw||'').trim();
+    if(!line || /^COD\.?\s*SIGTAP/i.test(line) || /^CODIGO/i.test(line)) return;
+    const m=line.match(/^(\d{8,10})\s+(.*)$/) || line.match(/^(\d{8,10})[;\t|,]+(.+)$/);
+    if(!m){ if(line.length>5) errors.push({linha:idx+1, conteudo:line.slice(0,160), erro:'Linha fora do padrão'}); return; }
+    const codigo=onlyDigits(m[1]);
+    const nome=upperClean(String(m[2]||'').replace(/\s+/g,' '));
+    if(!codigo || !nome){ errors.push({linha:idx+1, conteudo:line.slice(0,160), erro:'Código ou descrição vazios'}); return; }
+    if(seen.has(codigo)) return;
+    seen.add(codigo);
+    rows.push({codigo,nome,grupo:upperClean(grupoPadrao)||'IMPORTADO',subgrupo:upperClean(subgrupoPadrao)||'TXT',ativo:true});
+  });
+  return {rows, errors};
+}
+
 function findInstrumento(prestadores, pid, iid){ const p=prestadores.find(x=>x.id===pid); const i=p?.instrumentos.find(x=>x.id===iid); return {p,i}; }
 function competenciaFechada(mes){ return read('competencias.json',[]).some(c=>c.mes===mes && c.status==='FECHADA'); }
 function isAdminSession(req){ return req.session.user?.perfil==='ADMINISTRADOR'; }
@@ -208,8 +226,31 @@ app.post('/api/prestadores/:id/instrumentos',roles('ADMINISTRADOR'),(req,res)=>{
 app.post('/api/prestadores/:id/instrumentos/:iid/duplicar',roles('ADMINISTRADOR'),(req,res)=>{ const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,req.params.id,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const novo=JSON.parse(JSON.stringify(i)); novo.id=uid('i'); novo.numero=req.body.numero||''; novo.vigenciaInicio=req.body.vigenciaInicio||''; novo.vigenciaFim=req.body.vigenciaFim||''; novo.servico=req.body.servico||i.servico; p.instrumentos.push(novo); write('prestadores.json',ps); audit(req,'DUPLICAR_INSTRUMENTO','instrumento',novo.id,[{campo:'origem',novo:i.numero},{campo:'novo',novo:novo.numero}]); res.json(novo); });
 app.put('/api/prestadores/:id/instrumentos/:iid',roles('ADMINISTRADOR'),(req,res)=>{ if(!exigirPrestadorPermitido(req,res,req.params.id)) return; const ps=read('prestadores.json',[]); const {i}=findInstrumento(ps,req.params.id,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const old=JSON.parse(JSON.stringify(i)); ['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','valorGlobal','valorGlobalContrato','modoLancamento','anexos','ativo','bloqueado','motivoBloqueio','observacao','processo'].forEach(c=>{ if(req.body[c]!==undefined){ if(c==='valorGlobalContrato') i.valorGlobal=req.body[c]; else i[c]=req.body[c]; } }); addAuxValue('tiposInstrumento', i.tipo); addAuxValue('naturezas', i.natureza); addAuxValue('tiposServico', i.servico); addAuxValue('motivosBloqueio', i.motivoBloqueio); write('prestadores.json',ps); audit(req,'ALTERAR_INSTRUMENTO','instrumento',i.id,diff(old,i,['tipo','natureza','numero','vigenciaInicio','vigenciaFim','servico','valorGlobal','modoLancamento','anexos','ativo','bloqueado','motivoBloqueio','observacao'])); res.json(i); });
 
-app.get('/api/sigtap',auth,(req,res)=>{ const q=String(req.query.q||'').toUpperCase(); let a=read('sigtap.json',[]); if(q) a=a.filter(x=>x.nome.includes(q)||String(x.codigo).includes(q)||String(x.grupo||'').includes(q)||String(x.subgrupo||'').includes(q)); a.sort((x,y)=>String(x.nome||'').localeCompare(String(y.nome||''),'pt-BR')||String(x.codigo||'').localeCompare(String(y.codigo||''),'pt-BR')); res.json(a); });
-app.post('/api/sigtap',roles('ADMINISTRADOR'),(req,res)=>{ const a=read('sigtap.json',[]); if(a.some(x=>onlyDigits(x.codigo)===onlyDigits(req.body.codigo))) return res.status(400).json({erro:'Código SIGTAP já cadastrado'}); const p={codigo:req.body.codigo,nome:String(req.body.nome||'').toUpperCase(),grupo:req.body.grupo||'',subgrupo:req.body.subgrupo||'',ativo:true}; a.push(p); write('sigtap.json',a); audit(req,'CRIAR_SIGTAP','sigtap',p.codigo,[{campo:'procedimento',novo:p.nome}]); res.json(p); });
+app.get('/api/sigtap',auth,(req,res)=>{ const q=String(req.query.q||'').toUpperCase(); let a=read('sigtap.json',[]); if(q) a=a.filter(x=>String(x.nome||'').includes(q)||String(x.codigo||'').includes(q)||String(x.grupo||'').includes(q)||String(x.subgrupo||'').includes(q)); a.sort((x,y)=>String(x.nome||'').localeCompare(String(y.nome||''),'pt-BR')||String(x.codigo||'').localeCompare(String(y.codigo||''),'pt-BR')); res.json(a); });
+app.post('/api/sigtap',roles('ADMINISTRADOR'),(req,res)=>{ const a=read('sigtap.json',[]); if(a.some(x=>onlyDigits(x.codigo)===onlyDigits(req.body.codigo))) return res.status(400).json({erro:'Código SIGTAP já cadastrado'}); const p={codigo:onlyDigits(req.body.codigo),nome:upperClean(req.body.nome),grupo:upperClean(req.body.grupo),subgrupo:upperClean(req.body.subgrupo),ativo:true,criadoEm:now(),atualizadoEm:now()}; a.push(p); write('sigtap.json',a); audit(req,'CRIAR_SIGTAP','sigtap',p.codigo,[{campo:'procedimento',novo:p.nome}]); res.json(p); });
+app.get('/api/sigtap/importacoes',roles('ADMINISTRADOR'),(req,res)=>res.json(read('importacoes_sigtap.json',[])));
+app.post('/api/sigtap/importar-txt',roles('ADMINISTRADOR'),(req,res)=>{
+  const arquivo=req.body.arquivo||'base_sigtap.txt';
+  const atualizar=!!req.body.atualizarDescricoes;
+  const grupo=req.body.grupo||'IMPORTADO';
+  const subgrupo=req.body.subgrupo||'TXT';
+  const parsed=parseSigtapTxt(req.body.conteudo||'', grupo, subgrupo);
+  const base=read('sigtap.json',[]);
+  const by=new Map(base.map(x=>[onlyDigits(x.codigo), x]));
+  let novos=0, existentes=0, atualizados=0;
+  parsed.rows.forEach(r=>{
+    const atual=by.get(onlyDigits(r.codigo));
+    if(!atual){ const item={...r,criadoEm:now(),atualizadoEm:now(),importadoDe:arquivo}; base.push(item); by.set(r.codigo,item); novos++; }
+    else { existentes++; if(atualizar && upperClean(atual.nome)!==upperClean(r.nome)){ atual.nomeAnterior=atual.nome; atual.nome=r.nome; atual.grupo=atual.grupo||r.grupo; atual.subgrupo=atual.subgrupo||r.subgrupo; atual.atualizadoEm=now(); atualizados++; } }
+  });
+  base.sort((x,y)=>String(x.nome||'').localeCompare(String(y.nome||''),'pt-BR')||String(x.codigo||'').localeCompare(String(y.codigo||''),'pt-BR'));
+  write('sigtap.json',base);
+  const hist=read('importacoes_sigtap.json',[]);
+  const item={id:uid('imp'),arquivo,dataHora:now(),usuario:req.session.user.login,totalLido:parsed.rows.length,novosCadastrados:novos,jaExistentes:existentes,atualizados,erros:parsed.errors.length,amostraErros:parsed.errors.slice(0,20)};
+  hist.unshift(item); write('importacoes_sigtap.json',hist);
+  audit(req,'IMPORTAR_SIGTAP_TXT','sigtap',item.id,[{campo:'arquivo',novo:arquivo},{campo:'total_lido',novo:parsed.rows.length},{campo:'novos',novo:novos},{campo:'existentes',novo:existentes},{campo:'atualizados',novo:atualizados},{campo:'erros',novo:parsed.errors.length}]);
+  res.json(item);
+});
 app.post('/api/prestadores/:pid/instrumentos/:iid/procedimentos',roles('ADMINISTRADOR'),(req,res)=>{ if(!exigirPrestadorPermitido(req,res,req.params.pid)) return; const ps=read('prestadores.json',[]); const {p,i}=findInstrumento(ps,req.params.pid,req.params.iid); if(!i) return res.status(404).json({erro:'Instrumento não encontrado'}); const cod=String(req.body.codigo||''); if(!cod || !req.body.nome) return res.status(400).json({erro:'Informe o procedimento'}); if(i.procedimentos.some(p=>onlyDigits(p.codigo)===onlyDigits(cod))) return res.status(400).json({erro:'Procedimento já vinculado a este instrumento/serviço'}); const proc={codigo:cod,nome:req.body.nome,ativo:true}; i.procedimentos.push(proc); write('prestadores.json',ps); audit(req,'VINCULAR_PROCEDIMENTO','instrumento',i.id,[{campo:'prestador',novo:p?.nome||''},{campo:'servico',novo:i.servico||''},{campo:'procedimento',novo:`${proc.codigo} - ${proc.nome}`}]); res.json(proc); });
 app.put('/api/prestadores/:pid/instrumentos/:iid/procedimentos/:codigo',roles('ADMINISTRADOR'),(req,res)=>{ const ps=read('prestadores.json',[]); const {i}=findInstrumento(ps,req.params.pid,req.params.iid); const proc=i?.procedimentos.find(p=>onlyDigits(p.codigo)===onlyDigits(req.params.codigo)); if(!proc)return res.status(404).json({erro:'Procedimento não encontrado'}); const old={...proc}; if(req.body.ativo!==undefined) proc.ativo=req.body.ativo; write('prestadores.json',ps); audit(req,'ALTERAR_PROCEDIMENTO_VINCULADO','procedimento',proc.codigo,diff(old,proc,['ativo'])); res.json(proc); });
 

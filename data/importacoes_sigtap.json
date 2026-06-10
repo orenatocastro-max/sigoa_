@@ -1,0 +1,13 @@
+[
+  {
+    "id": "imp_inicial_cirurgias",
+    "arquivo": "Cirurgias.txt",
+    "dataHora": "2026-06-10T00:00:00.000Z",
+    "usuario": "sistema",
+    "totalLido": 685,
+    "novosCadastrados": 684,
+    "jaExistentes": 1,
+    "atualizados": 1,
+    "erros": 0
+  }
+]
